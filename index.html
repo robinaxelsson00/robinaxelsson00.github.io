@@ -5,16 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <!-- Anpassad rektangulär muspekare (5mm x 10mm) -->
     <div class="custom-cursor"></div>
 
+    <!-- Navigering -->
     <header class="navbar">
-        <div class="logo">PORTFOLIO®</div>
+        <a href="#hero" class="logo">PORTFOLIO®</a>
         <nav class="nav-links">
             <a href="#work">WORK</a>
             <a href="#about">ABOUT</a>
@@ -22,33 +25,64 @@
         </nav>
     </header>
 
-    <section class="hero">
+    <!-- 0. HERO / STARTSIDA -->
+    <section id="hero" class="fullscreen-section">
         <div class="hero-bg-slideshow">
             <div class="slide slide-1"></div>
             <div class="slide slide-2"></div>
             <div class="slide slide-3"></div>
             <div class="slide slide-4"></div>
         </div>
-        <div class="hero-bg-overlay"></div>
+        <div class="overlay"></div>
 
-        <div class="hero-content">
+        <div class="section-content">
             <h1 class="welcome-title">WELCOME</h1>
-            <p class="hero-subtitle">VISUAL DESIGN & CREATIVE DIRECTION</p>
+            <p class="section-subtitle">VISUAL DESIGN & CREATIVE DIRECTION</p>
         </div>
 
         <div class="scroll-indicator">
-            <span>SCROLL</span>
+            <span>SCROLL TO EXPLORE</span>
             <div class="line"></div>
         </div>
     </section>
 
-    <section id="work" class="work-section">
-        <div class="section-header">
-            <h2>SELECTED WORKS</h2>
-            <span class="count">(01—04)</span>
+    <!-- 1. WORK SECTION (Stadsmiljö & Höghus) -->
+    <section id="work" class="fullscreen-section">
+        <video class="bg-video" autoplay loop muted playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-crowd-of-people-walking-on-a-city-street-41221-large.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+
+        <div class="section-content">
+            <h2 class="section-title">WORK</h2>
+            <p class="section-subtitle">SELECTED PROJECTS & VISUAL EXPERIENCES</p>
         </div>
-        <div class="projects-grid">
-            </div>
+    </section>
+
+    <!-- 2. ABOUT SECTION (Kontorsmiljö & New York-känsla) -->
+    <section id="about" class="fullscreen-section">
+        <video class="bg-video" autoplay loop muted playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-view-of-a-city-from-a-high-building-41551-large.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+
+        <div class="section-content">
+            <h2 class="section-title">ABOUT</h2>
+            <p class="section-subtitle">CREATIVE DIRECTION & BRANDING</p>
+        </div>
+    </section>
+
+    <!-- 3. CONTACT SECTION (Person med dator & telefon) -->
+    <section id="contact" class="fullscreen-section">
+        <video class="bg-video" autoplay loop muted playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-working-on-her-laptop-in-a-modern-office-42861-large.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+
+        <div class="section-content">
+            <h2 class="section-title">CONTACT</h2>
+            <p class="section-subtitle">GET IN TOUCH & COLLABORATE</p>
+        </div>
     </section>
 
     <script src="script.js"></script>
