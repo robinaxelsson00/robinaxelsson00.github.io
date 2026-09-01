@@ -1,0 +1,185 @@
+:root {
+    /* Db Journey-inspirerad ljus färgpalett */
+    --bg-color: #f4f4f0;        /* Mjuk, off-white nyans */
+    --surface-color: #ffffff;   /* Ren vit för kort och ytor */
+    --text-primary: #111111;    /* Nästan svart för hög kontrast */
+    --text-secondary: #767676;  /* Mjuk grå för sekundär text */
+    --border-color: #e2e2dc;    /* Subtila linjer */
+    
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Dölj den vanliga muspekaren för att använda den anpassade */
+    cursor: none !important;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- ANPASSAD MUSPEKARE (5mm x 10mm) --- */
+.custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 5mm;
+    height: 10mm;
+    background-color: var(--text-primary);
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference; /* Gör att pekaren syns över både mörka och ljusa ytor */
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease-out;
+}
+
+/* --- NAVIGERING --- */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 3rem;
+    z-index: 100;
+    mix-blend-mode: exclusion;
+}
+
+.logo {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #ffffff;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2.5rem;
+}
+
+.nav-links a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: opacity 0.3s ease;
+}
+
+.nav-links a:hover {
+    opacity: 0.6;
+}
+
+/* --- HERO SECTION / STARTSIDA --- */
+.hero {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Rörlig bakgrund (Ljus & subtil animering) */
+.hero-bg-animated {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(235, 235, 225, 1) 0%, rgba(244, 244, 240, 1) 70%);
+    background-size: 100% 100%;
+    animation: gradientMove 12s ease infinite alternate;
+    z-index: 1;
+}
+
+@keyframes gradientMove {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    50% {
+        transform: translate(-2%, 2%) scale(1.05);
+    }
+    100% {
+        transform: translate(2%, -2%) scale(1);
+    }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.welcome-title {
+    font-size: 11vw; /* Responsiv, enorm typografi i Db-stil */
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    color: var(--text-primary);
+    text-transform: uppercase;
+}
+
+.hero-subtitle {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--text-secondary);
+}
+
+/* Scroll-indikator längst ner */
+.scroll-indicator {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 3rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--text-secondary);
+}
+
+.scroll-indicator .line {
+    width: 40px;
+    height: 1px;
+    background-color: var(--text-secondary);
+}
+
+/* --- WORK SECTION --- */
+.work-section {
+    padding: 8rem 3rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4rem;
+}
+
+.section-header h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.section-header .count {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
