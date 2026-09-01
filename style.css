@@ -1,11 +1,8 @@
 :root {
-    /* Db Journey-inspirerad ljus färgpalett */
-    --bg-color: #f4f4f0;        /* Mjuk, off-white nyans */
-    --surface-color: #ffffff;   /* Ren vit för kort och ytor */
-    --text-primary: #111111;    /* Nästan svart för hög kontrast */
-    --text-secondary: #767676;  /* Mjuk grå för sekundär text */
-    --border-color: #e2e2dc;    /* Subtila linjer */
-    
+    --bg-color: #f5f5f0;
+    --text-primary: #111111;
+    --text-secondary: #666666;
+    --border-color: #e2e2dc;
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -13,8 +10,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* Dölj den vanliga muspekaren för att använda den anpassade */
-    cursor: none !important;
+    cursor: none !important; /* Döljer standardmusen för hela sidan */
 }
 
 body {
@@ -32,10 +28,10 @@ body {
     left: 0;
     width: 5mm;
     height: 10mm;
-    background-color: var(--text-primary);
+    background-color: #ffffff;
     pointer-events: none;
     z-index: 9999;
-    mix-blend-mode: difference; /* Gör att pekaren syns över både mörka och ljusa ytor */
+    mix-blend-mode: difference;
     transform: translate(-50%, -50%);
     transition: transform 0.1s ease-out;
 }
@@ -49,21 +45,21 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 2rem 3rem;
+    padding: 2.5rem 3.5rem;
     z-index: 100;
-    mix-blend-mode: exclusion;
+    mix-blend-mode: difference;
 }
 
 .logo {
     font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: 1.5px;
+    font-weight: 900;
+    letter-spacing: 2px;
     color: #ffffff;
 }
 
 .nav-links {
     display: flex;
-    gap: 2.5rem;
+    gap: 3rem;
 }
 
 .nav-links a {
@@ -71,7 +67,7 @@ body {
     text-decoration: none;
     font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     transition: opacity 0.3s ease;
 }
 
@@ -79,7 +75,7 @@ body {
     opacity: 0.6;
 }
 
-/* --- HERO SECTION / STARTSIDA --- */
+/* --- HERO SECTION --- */
 .hero {
     position: relative;
     height: 100vh;
@@ -91,78 +87,125 @@ body {
     overflow: hidden;
 }
 
-/* Rörlig bakgrund (Ljus & subtil animering) */
-.hero-bg-animated {
+/* --- RÖRLIG BILD-BAKGRUND (SLIDESHOW) --- */
+.hero-bg-slideshow {
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(235, 235, 225, 1) 0%, rgba(244, 244, 240, 1) 70%);
-    background-size: 100% 100%;
-    animation: gradientMove 12s ease infinite alternate;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 1;
 }
 
-@keyframes gradientMove {
-    0% {
-        transform: translate(0, 0) scale(1);
-    }
-    50% {
-        transform: translate(-2%, 2%) scale(1.05);
-    }
-    100% {
-        transform: translate(2%, -2%) scale(1);
-    }
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    animation: slideAnimation 20s infinite ease-in-out;
 }
 
+/* Natur- & Solnedgångsbilder (Unsplash) */
+.slide-1 {
+    background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2000&auto=format&fit=crop');
+    animation-delay: 0s;
+}
+
+.slide-2 {
+    background-image: url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2000&auto=format&fit=crop');
+    animation-delay: 5s;
+}
+
+.slide-3 {
+    background-image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2000&auto=format&fit=crop');
+    animation-delay: 10s;
+}
+
+.slide-4 {
+    background-image: url('https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?q=80&w=2000&auto=format&fit=crop');
+    animation-delay: 15s;
+}
+
+@keyframes slideAnimation {
+    0% { opacity: 0; transform: scale(1); }
+    8% { opacity: 1; }
+    25% { opacity: 1; transform: scale(1.05); }
+    33% { opacity: 0; transform: scale(1.08); }
+    100% { opacity: 0; }
+}
+
+/* Ljust filter över bilderna för ren Db-känsla */
+.hero-bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(245, 245, 240, 0.35); /* Gör bilderna ljusa och mjuknar kontrasterna */
+    backdrop-filter: blur(2px);
+    z-index: 2;
+}
+
+/* --- TEXT & CONTENT --- */
 .hero-content {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     text-align: center;
+    padding: 0 1rem;
 }
 
 .welcome-title {
-    font-size: 11vw; /* Responsiv, enorm typografi i Db-stil */
-    font-weight: 800;
+    font-size: 13vw;
+    font-weight: 900;
     letter-spacing: -0.04em;
-    line-height: 0.9;
-    color: var(--text-primary);
+    line-height: 0.85;
     text-transform: uppercase;
+    /* Transparent stil */
+    color: rgba(17, 17, 17, 0.45);
+    backdrop-filter: blur(4px);
+    text-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
 }
 
 .hero-subtitle {
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    color: var(--text-secondary);
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.25em;
+    color: rgba(17, 17, 17, 0.75);
+    text-transform: uppercase;
 }
 
-/* Scroll-indikator längst ner */
+/* Scroll-indikator */
 .scroll-indicator {
     position: absolute;
-    bottom: 2.5rem;
-    left: 3rem;
-    z-index: 2;
+    bottom: 3rem;
+    left: 3.5rem;
+    z-index: 3;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.2rem;
     font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    color: var(--text-secondary);
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    color: rgba(17, 17, 17, 0.7);
 }
 
 .scroll-indicator .line {
-    width: 40px;
+    width: 50px;
     height: 1px;
-    background-color: var(--text-secondary);
+    background-color: rgba(17, 17, 17, 0.4);
 }
 
 /* --- WORK SECTION --- */
 .work-section {
-    padding: 8rem 3rem;
+    position: relative;
+    z-index: 3;
+    background-color: var(--bg-color);
+    padding: 8rem 3.5rem;
     border-top: 1px solid var(--border-color);
 }
 
@@ -174,12 +217,13 @@ body {
 }
 
 .section-header h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
 }
 
 .section-header .count {
     font-size: 0.9rem;
+    font-weight: 600;
     color: var(--text-secondary);
 }
