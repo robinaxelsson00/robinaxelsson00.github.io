@@ -5,27 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- Anpassad rektangulär muspekare (5mm x 10mm) -->
     <div class="custom-cursor"></div>
 
-    <!-- Navigering -->
+    <div class="hover-reveal">
+        <img src="" alt="Preview" class="hover-reveal-img">
+    </div>
+
     <header class="navbar">
         <a href="#hero" class="logo">PORTFOLIO®</a>
         <nav class="nav-links">
-            <a href="#about">ABOUT me</a>
-            <a href="#work">previous WORK</a>
+            <a href="#about">ABOUT my</a>
+            <a href="#work">WORK</a>
             <a href="#contact">CONTACT me</a>
         </nav>
     </header>
 
-    <!-- 0. HERO / STARTSIDA -->
     <section id="hero" class="fullscreen-section">
         <div class="hero-bg-slideshow">
             <div class="slide slide-1"></div>
@@ -46,42 +46,69 @@
         </div>
     </section>
 
-    <!-- 1. WORK SECTION (Stadsmiljö & Höghus) -->
-    <section id="work" class="fullscreen-section">
-        <video class="bg-video" autoplay loop muted playsinline>
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-crowd-of-people-walking-on-a-city-street-41221-large.mp4" type="video/mp4">
-        </video>
-        <div class="overlay"></div>
-
-        <div class="section-content">
-            <h2 class="section-title">WORK</h2>
-            <p class="section-subtitle">SELECTED PROJECTS & VISUAL EXPERIENCES</p>
-        </div>
-    </section>
-
-    <!-- 2. ABOUT SECTION (Kontorsmiljö & New York-känsla) -->
     <section id="about" class="fullscreen-section">
         <video class="bg-video" autoplay loop muted playsinline>
             <source src="https://assets.mixkit.co/videos/preview/mixkit-view-of-a-city-from-a-high-building-41551-large.mp4" type="video/mp4">
         </video>
         <div class="overlay"></div>
 
-        <div class="section-content">
+        <div class="reveal-list-container">
             <h2 class="section-title">ABOUT</h2>
-            <p class="section-subtitle">PREVIOUS EXPERIENCES AND INTERESTS</p>
+            
+            <ul class="reveal-list">
+                <li class="reveal-item" data-image="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1000&auto=format&fit=crop">
+                    <span class="item-num">01</span>
+                    <span class="item-text">CREATIVE DIRECTION</span>
+                </li>
+                <li class="reveal-item" data-image="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1000&auto=format&fit=crop">
+                    <span class="item-num">02</span>
+                    <span class="item-text">BRAND STRATEGY</span>
+                </li>
+            </ul>
         </div>
     </section>
 
-    <!-- 3. CONTACT SECTION (Person med dator & telefon) -->
+    <section id="work" class="fullscreen-section">
+        <video class="bg-video" autoplay loop muted playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-crowd-of-people-walking-on-a-city-street-41221-large.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+
+        <div class="reveal-list-container">
+            <h2 class="section-title">WORK</h2>
+
+            <ul class="reveal-list">
+                <li class="reveal-item" data-image="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1000&auto=format&fit=crop">
+                    <span class="item-num">2026</span>
+                    <span class="item-text">PROJECT ONE</span>
+                </li>
+                <li class="reveal-item" data-image="https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1000&auto=format&fit=crop">
+                    <span class="item-num">2026</span>
+                    <span class="item-text">VISUAL IDENTITY</span>
+                </li>
+                <li class="reveal-item" data-image="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=1000&auto=format&fit=crop">
+                    <span class="item-num">2025</span>
+                    <span class="item-text">PHOTOGRAPHY</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
     <section id="contact" class="fullscreen-section">
         <video class="bg-video" autoplay loop muted playsinline>
             <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-working-on-her-laptop-in-a-modern-office-42861-large.mp4" type="video/mp4">
         </video>
         <div class="overlay"></div>
 
-        <div class="section-content">
+        <div class="reveal-list-container">
             <h2 class="section-title">CONTACT</h2>
-            <p class="section-subtitle">GET IN TOUCH & COLLABORATE</p>
+
+            <ul class="reveal-list">
+                <li class="reveal-item" data-image="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop">
+                    <span class="item-num">EMAIL</span>
+                    <span class="item-text">HELLO@PORTFOLIO.COM</span>
+                </li>
+            </ul>
         </div>
     </section>
 
