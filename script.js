@@ -4,16 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const revealImg = document.querySelector('.hover-reveal-img');
     const revealItems = document.querySelectorAll('.reveal-item');
 
-    // Följ musrörelsen för både muspekaren och Hover Reveal-bilden
+    // Följ musrörelsen för den anpassade rektangeln
     document.addEventListener('mousemove', (e) => {
         cursor.style.left = `${e.clientX}px`;
         cursor.style.top = `${e.clientY}px`;
-
-        revealContainer.style.left = `${e.clientX}px`;
-        revealContainer.style.top = `${e.clientY}px`;
     });
 
-    // Hover Reveal-logik för listan
+    // Fullskärms Hover Reveal
     revealItems.forEach(item => {
         item.addEventListener('mouseenter', () => {
             const imgUrl = item.getAttribute('data-image');
@@ -28,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Förstoring av muspekare på vanliga länkar
+    // Förstoring av muspekaren vid hovring på länkar
     const navLinks = document.querySelectorAll('.navbar a');
     navLinks.forEach(link => {
         link.addEventListener('mouseenter', () => {
