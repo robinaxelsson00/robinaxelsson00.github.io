@@ -9,11 +9,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    cursor: none !important; /* Döljer standardmusen */
+    cursor: none !important;
 }
 
 html {
-    scroll-behavior: smooth; /* Mjuk scroll när man klickar i menyn */
+    scroll-behavior: smooth;
 }
 
 body {
@@ -24,7 +24,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* --- ANPASSAD MUSPEKARE (5mm x 10mm) --- */
+/* --- MUSPEKARE --- */
 .custom-cursor {
     position: fixed;
     top: 0;
@@ -37,6 +37,33 @@ body {
     mix-blend-mode: difference;
     transform: translate(-50%, -50%);
     transition: transform 0.1s ease-out;
+}
+
+/* --- HOVER REVEAL BILD --- */
+.hover-reveal {
+    position: fixed;
+    width: 400px;
+    height: 260px;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 50;
+    overflow: hidden;
+    border-radius: 4px;
+    transform: translate(-50%, -50%) scale(0.8);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-reveal.active {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.hover-reveal-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* --- NAVIGERING --- */
@@ -79,7 +106,7 @@ body {
     opacity: 0.6;
 }
 
-/* --- HELSKÄRMSSEKTIONER --- */
+/* --- HELSKÄRMSSEKTIONER & VIDEO --- */
 .fullscreen-section {
     position: relative;
     height: 100vh;
@@ -91,7 +118,6 @@ body {
     overflow: hidden;
 }
 
-/* Videobakgrunder */
 .bg-video {
     position: absolute;
     top: 50%;
@@ -105,19 +131,18 @@ body {
     object-fit: cover;
 }
 
-/* Ljust filter över alla bakgrunder för ren Db-känsla */
 .overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(245, 245, 240, 0.3);
-    backdrop-filter: blur(2px);
+    background: rgba(245, 245, 240, 0.45);
+    backdrop-filter: blur(4px);
     z-index: 2;
 }
 
-/* --- TEXT & RUBRIKER --- */
+/* --- HERO & RUBRIKER --- */
 .section-content {
     position: relative;
     z-index: 3;
@@ -133,22 +158,19 @@ body {
     text-transform: uppercase;
     color: rgba(17, 17, 17, 0.45);
     backdrop-filter: blur(4px);
-    text-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
 }
 
 .section-title {
-    font-size: 11vw;
+    font-size: 4vw;
     font-weight: 900;
-    letter-spacing: -0.04em;
-    line-height: 0.85;
+    letter-spacing: -0.03em;
+    margin-bottom: 2rem;
+    color: rgba(17, 17, 17, 0.85);
     text-transform: uppercase;
-    color: rgba(17, 17, 17, 0.55);
-    backdrop-filter: blur(4px);
-    text-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
 }
 
 .section-subtitle {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     font-size: 0.85rem;
     font-weight: 800;
     letter-spacing: 0.25em;
@@ -156,28 +178,51 @@ body {
     text-transform: uppercase;
 }
 
-/* Scroll-indikator på startsidan */
-.scroll-indicator {
-    position: absolute;
-    bottom: 3rem;
-    left: 3.5rem;
+/* --- REVEAL LISTA --- */
+.reveal-list-container {
+    position: relative;
     z-index: 3;
+    width: 100%;
+    max-width: 900px;
+    padding: 0 2rem;
+}
+
+.reveal-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.reveal-item {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
-    font-size: 0.75rem;
+    justify-content: space-between;
+    padding: 1.8rem 0;
+    border-bottom: 1px solid rgba(17, 17, 17, 0.2);
+    transition: padding 0.3s ease, border-color 0.3s ease;
+}
+
+.reveal-item:hover {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-color: rgba(17, 17, 17, 0.8);
+}
+
+.item-num {
+    font-size: 0.85rem;
     font-weight: 800;
-    letter-spacing: 0.2em;
-    color: rgba(17, 17, 17, 0.7);
+    letter-spacing: 1px;
+    color: var(--text-secondary);
 }
 
-.scroll-indicator .line {
-    width: 50px;
-    height: 1px;
-    background-color: rgba(17, 17, 17, 0.4);
+.item-text {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
 }
 
-/* --- HERO BILD-SLIDESHOW --- */
+/* HERO SLIDESHOW */
 .hero-bg-slideshow {
     position: absolute;
     top: 0;
@@ -225,4 +270,24 @@ body {
     25% { opacity: 1; transform: scale(1.05); }
     33% { opacity: 0; transform: scale(1.08); }
     100% { opacity: 0; }
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 3rem;
+    left: 3.5rem;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    color: rgba(17, 17, 17, 0.7);
+}
+
+.scroll-indicator .line {
+    width: 50px;
+    height: 1px;
+    background-color: rgba(17, 17, 17, 0.4);
 }
