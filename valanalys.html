@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valanalys Chart.js Dashboard</title>
+    <!-- Tailwind CSS för layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js bibliotek -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans p-6 space-y-8 max-w-7xl mx-auto">
+
+    <header class="border-b border-slate-700 pb-4">
+        <h1 class="text-3xl font-bold text-white">Komplett Chart.js Datamodell för Valanalys</h1>
+        <p class="text-slate-400 mt-1">Förtidsröstning, geografiska samband och slutgiltigt valresultat</p>
+    </header>
+
+    <!-- Grid 1: Förtidsröstning per Landskap & Parti -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+            <h2 class="text-lg font-bold text-slate-200 mb-3">1. Förtidsröstning per Landskap (%)</h2>
+            <div class="h-80"><canvas id="landskapChart"></canvas></div>
+        </div>
+
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+            <h2 class="text-lg font-bold text-slate-200 mb-3">2. Förtidsröstning per Parti (%)</h2>
+            <div class="h-80"><canvas id="partiChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Grid 2: Slutgiltigt resultat & Scatter Correlation -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+            <h2 class="text-lg font-bold text-slate-200 mb-3">3. Slutgiltigt Valresultat (S, M, SD per Landskap)</h2>
+            <div class="h-80"><canvas id="resultatChart"></canvas></div>
+        </div>
+
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+            <h2 class="text-lg font-bold text-slate-200 mb-3">4. Samband: Förtidsröstning vs. SD Valdagsstöd</h2>
+            <div class="h-80"><canvas id="scatterChart"></canvas></div>
+        </div>
+    </div>
+
+    <script>
+        // -------------------------------------------------------------
+        // DATASET 1: Förtidsröstning per Landskap
+        // -------------------------------------------------------------
+        const landskapLabels = ['Uppland', 'Västerbotten', 'Gotland', 'Skåne', 'Halland', 'Bohuslän', 'Västergötland', 'Öland', 'Jönköping', 'Östergötland', 'Kronoberg', 'Jämtland', 'Närke', 'Kalmar', 'Västmanland', 'Norrbotten', 'Södermanland', 'Ångermanland', 'Värmland', 'Gästrikland', 'Dalarna', 'Medelpad', 'Hälsingland', 'Dalsland', 'Härjedalen'];
+        const landskapFortidData = [54.8, 53.2, 52.0, 51.2, 50.5, 49.8, 47.5, 46.5, 46.0, 45.2, 44.1, 44.0, 43.8, 43.5, 42.5, 42.1, 41.8, 41.5, 41.0, 40.2, 39.5, 39.2, 38.8, 38.0, 37.5];
+
+        new Chart(document.getElementById('landskapChart'), {
+            type: 'bar',
+            data: {
+                labels: landskapLabels,
+                datasets: [{
+                    label: 'Andel förtidsröster (%)',
+                    data: landskapFortidData,
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 30, max: 60 } } }
+        });
+
+        // -------------------------------------------------------------
+        // DATASET 2: Förtidsröstning per Parti
+        // -------------------------------------------------------------
+        const partyLabels = ['KD', 'S', 'C', 'M', 'L', 'MP', 'V', 'SD'];
+        const partyFortidData = [49.1, 48.6, 46.8, 45.9, 45.2, 42.1, 41.3, 38.4];
+        const partyColors = ['#005ea1', '#e41b13', '#006a35', '#015293', '#006ab3', '#83cf39', '#da291c', '#eab308'];
+
+        new Chart(document.getElementById('partiChart'), {
+            type: 'bar',
+            data: {
+                labels: partyLabels,
+                datasets: [{
+                    label: 'Förtidsröster per parti (%)',
+                    data: partyFortidData,
+                    backgroundColor: partyColors,
+                    borderRadius: 4
+                }]
+            },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { min: 30, max: 55 } } }
+        });
+
+        // -------------------------------------------------------------
+        // DATASET 3: Slutgiltigt Valresultat (S, M, SD per Landskap)
+        // -------------------------------------------------------------
+        const sTotalt = [27.5, 39.5, 29.5, 23.8, 22.0, 23.8, 29.5, 28.8, 22.2, 29.8, 24.8, 32.0, 31.8, 30.5, 31.8, 40.8, 30.5, 36.5, 33.0, 26.8, 26.5, 34.8, 32.5, 24.2, 24.5];
+        const mTotalt = [28.2, 15.2, 21.5, 22.0, 26.8, 26.5, 21.2, 18.8, 21.5, 20.2, 19.8, 17.0, 18.0, 17.5, 17.5, 13.8, 18.2, 13.5, 16.5, 15.5, 16.8, 14.2, 14.8, 14.5, 13.0];
+        const sdTotalt = [14.8, 12.8, 13.8, 26.8, 18.8, 17.2, 19.8, 19.8, 25.8, 19.5, 25.2, 16.2, 19.5, 21.5, 21.2, 16.8, 20.8, 18.5, 20.2, 28.0, 27.5, 19.5, 21.2, 27.2, 28.5];
+
+        new Chart(document.getElementById('resultatChart'), {
+            type: 'bar',
+            data: {
+                labels: landskapLabels,
+                datasets: [
+                    { label: 'S (%)', data: sTotalt, backgroundColor: '#ef4444' },
+                    { label: 'M (%)', data: mTotalt, backgroundColor: '#3b82f6' },
+                    { label: 'SD (%)', data: sdTotalt, backgroundColor: '#eab308' }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 50 } } }
+        });
+
+        // -------------------------------------------------------------
+        // DATASET 4: Scatter Plot (Förtidsröstning vs SD Valdag)
+        // -------------------------------------------------------------
+        const scatterData = landskapLabels.map((l, i) => ({ x: landskapFortidData[i], y: sdTotalt[i], label: l }));
+
+        new Chart(document.getElementById('scatterChart'), {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Landskap',
+                    data: scatterData,
+                    backgroundColor: '#10b981',
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: 'Förtidsröster (%)' }, min: 35, max: 60 },
+                    y: { title: { display: true, text: 'SD Valdagsandel (%)' }, min: 10, max: 32 }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
