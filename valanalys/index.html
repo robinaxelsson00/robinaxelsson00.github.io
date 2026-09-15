@@ -29,17 +29,10 @@
         </div>
     </div>
 
-    <!-- Grid 2: Slutgiltigt resultat & Scatter Correlation -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
-            <h2 class="text-lg font-bold text-slate-200 mb-3">3. Slutgiltigt Valresultat (S, M, SD per Landskap)</h2>
-            <div class="h-80"><canvas id="resultatChart"></canvas></div>
-        </div>
-
-        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
-            <h2 class="text-lg font-bold text-slate-200 mb-3">4. Samband: Förtidsröstning vs. SD Valdagsstöd</h2>
-            <div class="h-80"><canvas id="scatterChart"></canvas></div>
-        </div>
+    <!-- Sektion 2: Slutgiltigt resultat (Breddad till helskärm) -->
+    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+        <h2 class="text-lg font-bold text-slate-200 mb-3">3. Slutgiltigt Valresultat (S, M, SD per Landskap)</h2>
+        <div class="h-80"><canvas id="resultatChart"></canvas></div>
     </div>
 
     <script>
@@ -102,31 +95,6 @@
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 50 } } }
-        });
-
-        // -------------------------------------------------------------
-        // DATASET 4: Scatter Plot (Förtidsröstning vs SD Valdag)
-        // -------------------------------------------------------------
-        const scatterData = landskapLabels.map((l, i) => ({ x: landskapFortidData[i], y: sdTotalt[i], label: l }));
-
-        new Chart(document.getElementById('scatterChart'), {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'Landskap',
-                    data: scatterData,
-                    backgroundColor: '#10b981',
-                    pointRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { title: { display: true, text: 'Förtidsröster (%)' }, min: 35, max: 60 },
-                    y: { title: { display: true, text: 'SD Valdagsandel (%)' }, min: 10, max: 32 }
-                }
-            }
         });
     </script>
 </body>
