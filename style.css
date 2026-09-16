@@ -64,6 +64,22 @@ body {
     transform: scale(a.05);
     transition: transform 0.6 ease-out
 }
+/* Styling för hover-video */
+.hover-reveal-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none; /* Döljs som standard */
+}
+
+/* Om det är en video som hovras: visa videon och dölj den vanliga bilden */
+.hover-reveal.has-video .hover-reveal-img {
+    display: none;
+}
+
+.hover-reveal.has-video .hover-reveal-video {
+    display: block;
+}
 
 /* --- NAVIGERING --- */
 .navbar {

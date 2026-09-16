@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cursor = document.querySelector('.custom-cursor');
     const revealContainer = document.querySelector('.hover-reveal');
     const revealImg = document.querySelector('.hover-reveal-img');
+    const revealVideo = document.querySelector('.hover-reveal-video'); // Hämtar video-elementet
     const revealItems = document.querySelectorAll('.reveal-item');
 
     // Följ musrörelsen för den anpassade rektangeln
@@ -23,19 +24,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Fullskärms Hover Reveal
-    if (revealContainer && revealImg && revealItems.length > 0) {
+    // Fullskärms Hover Reveal (Bilder & Videor)
+    if (revealContainer && revealItems.length > 0) {
         revealItems.forEach(item => {
             item.addEventListener('mouseenter', () => {
+                const videoUrl = item.getAttribute('data-video');
                 const imgUrl = item.getAttribute('data-image');
-                if (imgUrl) {
+
+                if (videoUrl && revealVideo) {
+                    revealVideo.src = videoUrl;
+                    revealVideo.play();
+                    revealContainer.classList.add('has-video');
+                    revealContainer.classList.add('active');
+                } else if (imgUrl && revealImg) {
                     revealImg.src = imgUrl;
+                    revealContainer.classList.remove('has-video');
                     revealContainer.classList.add('active');
                 }
             });
 
             item.addEventListener('mouseleave', () => {
                 revealContainer.classList.remove('active');
+                if (revealVideo) {
+                    revealVideo.pause();
+                }
             });
         });
     }
