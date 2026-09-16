@@ -221,38 +221,154 @@
     </div>
   </div>
 </div>
-<div style="background: #ffffff; color: #0f172a; padding: 24px; border-radius: 12px; font-family: sans-serif; max-width: 600px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0;">
+<!-- INTERAKTIV DATAWIDGET -->
+<div id="interactive-widget-box" style="background: #ffffff; color: #0f172a; padding: 24px; border-radius: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; margin: 20px 0;">
+  
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-    <span style="font-weight: 800; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;">Data Interaktiven</span>
+    <span style="font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;">Data Interaktiven</span>
     <span style="background: #e0f2fe; color: #0369a1; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 12px;">INBÄDDNINGSKLAR</span>
   </div>
 
-  <label style="font-size: 0.8rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Välj parti att granska:</label>
-  <select style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; font-weight: 600; margin-bottom: 20px;">
-    <option>Socialdemokraterna (S)</option>
-    <option>Moderaterna (M)</option>
-    <option>Miljöpartiet (MP)</option>
+  <label for="party-selector" style="font-size: 0.85rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Välj parti att granska:</label>
+  <select id="party-selector" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; font-weight: 600; font-size: 0.9rem; color: #0f172a; margin-bottom: 20px; cursor: pointer;">
+    <option value="S">Socialdemokraterna (S)</option>
+    <option value="KD">Kristdemokraterna (KD)</option>
+    <option value="M">Moderaterna (M)</option>
+    <option value="SD">Sverigedemokraterna (SD)</option>
+    <option value="C">Centerpartiet (C)</option>
+    <option value="V">Vänsterpartiet (V)</option>
+    <option value="MP">Miljöpartiet (MP)</option>
+    <option value="L">Liberalerna (L)</option>
   </select>
 
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: center; margin-bottom: 20px;">
     <div style="background: #f1f5f9; padding: 16px; border-radius: 8px;">
-      <div style="font-size: 1.8rem; font-weight: 900; color: #e11d48;">54.2%</div>
-      <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-top: 2px;">RÖSTER I BOXEN</div>
+      <div id="early-vote-val" style="font-size: 1.8rem; font-weight: 900; color: #e11d48; transition: all 0.3s ease;">54.2%</div>
+      <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-top: 2px; text-transform: uppercase;">Röster i boxen</div>
     </div>
     <div style="background: #f1f5f9; padding: 16px; border-radius: 8px;">
-      <div style="font-size: 1.8rem; font-weight: 900; color: #0f172a;">45.8%</div>
-      <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-top: 2px;">VALDAGSRÖSTER</div>
+      <div id="election-vote-val" style="font-size: 1.8rem; font-weight: 900; color: #0f172a; transition: all 0.3s ease;">45.8%</div>
+      <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-top: 2px; text-transform: uppercase;">Valdagsröster</div>
     </div>
   </div>
 
-  <div style="background: #fff1f2; border-left: 4px solid #f43f5e; padding: 12px; font-size: 0.8rem; color: #9f1239; margin-bottom: 16px;">
-    <strong>Strategisk slutsats:</strong> S måste flytta sina kampanjresurser till de två mellersta veckorna i valrörelsen för att säkra sin mobilisering.
+  <div id="analysis-box" style="background: #fff1f2; border-left: 4px solid #e11d48; padding: 14px; font-size: 0.85rem; color: #9f1239; margin-bottom: 16px; line-height: 1.4; border-radius: 0 6px 6px 0; transition: all 0.3s ease;">
+    <strong>Strategisk slutsats:</strong> <span id="analysis-text">Socialdemokraterna har en övervägande andel röstare som förtidsröstar (54,2 %). Partiet måste flytta sina kampanjresurser till de två mellersta veckorna i valrörelsen för att säkra sin mobilisering och har stor del av sina röster 'i boxen' tidigt.</span>
   </div>
 
-  <button style="width: 100%; background: #0f172a; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
+  <button id="copy-widget-btn" style="width: 100%; background: #0f172a; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: background 0.2s ease;">
     Kopiera iframe-kod för artikel (&lt;/&gt;)
   </button>
+
 </div>
+
+<script>
+(function() {
+  const partyData = {
+    S: {
+      early: "54.2%",
+      valdag: "45.8%",
+      color: "#e11d48",
+      bgColor: "#fff1f2",
+      textColor: "#9f1239",
+      analysis: "Socialdemokraterna har en övervägande andel röstare som förtidsröstar (54,2 %). Partiet måste flytta sina kampanjresurser till de två mellersta veckorna i valrörelsen för att säkra sin mobilisering och har stor del av sina röster 'i boxen' tidigt."
+    },
+    KD: {
+      early: "51.0%",
+      valdag: "49.0%",
+      color: "#0284c7",
+      bgColor: "#f0f9ff",
+      textColor: "#0369a1",
+      analysis: "Kristdemokraterna nådde över 50 % i förtidsröster tack vare sin lojala väljarbas. Mobiliseringsinsatserna sker i huvudsak före sista kampanjveckan."
+    },
+    M: {
+      early: "48.0%",
+      valdag: "52.0%",
+      color: "#2563eb",
+      bgColor: "#eff6ff",
+      textColor: "#1e40af",
+      analysis: "Moderaterna har en mycket balanserad väljarkår med 48,0 % förtidsröster. Kampanjbudgeten fördelas jämnt mellan tidig synlighet och sista helgens slutspurt."
+    },
+    SD: {
+      early: "46.0%",
+      valdag: "54.0%",
+      color: "#d97706",
+      bgColor: "#fffbeb",
+      textColor: "#92400e",
+      analysis: "Sverigedemokraterna har 46,0 % förtidsröster. De kombinerar stark förtidsröstning på landsbygden med en betydande mobilisering på själva valdagen."
+    },
+    C: {
+      early: "44.0%",
+      valdag: "56.0%",
+      color: "#15803d",
+      bgColor: "#f0fdf4",
+      textColor: "#166534",
+      analysis: "Centerpartiet har 44,0 % förtidsröster. Deras väljarkår väntar i högre grad in slutdebatterna jämfört med traditionella förtidsröstningspartier."
+    },
+    V: {
+      early: "41.0%",
+      valdag: "59.0%",
+      color: "#dc2626",
+      bgColor: "#fef2f2",
+      textColor: "#991b1b",
+      analysis: "Vänsterpartiet har 41,0 % förtidsröster. Med många yngre och studerande väljare faller en stor del av rösterna direkt i vallokalen på valdagen."
+    },
+    MP: {
+      early: "39.0%",
+      valdag: "61.0%",
+      color: "#16a34a",
+      bgColor: "#f0fdf4",
+      textColor: "#166534",
+      analysis: "Miljöpartiet ligger i riskzonen med endast 39,0 % förtidsröster. Hela valframgången hänger på slutspurten och exponeringen i SVT:s slutdebatt."
+    },
+    L: {
+      early: "37.0%",
+      valdag: "63.0%",
+      color: "#0ea5e9",
+      bgColor: "#f0f9ff",
+      textColor: "#0369a1",
+      analysis: "Liberalerna är mest valdagsberoende med 37,0 % förtidsröster. Partiet har historiskt en stor andel väljare som bestämmer sig i vallokalen under valhelgen."
+    }
+  };
+
+  function initWidget() {
+    const selectElem = document.getElementById("party-selector");
+    const copyBtn = document.getElementById("copy-widget-btn");
+
+    if (!selectElem) return;
+
+    selectElem.addEventListener("change", function() {
+      const party = partyData[this.value];
+      if (!party) return;
+
+      document.getElementById("early-vote-val").textContent = party.early;
+      document.getElementById("early-vote-val").style.color = party.color;
+      document.getElementById("election-vote-val").textContent = party.valdag;
+
+      const analysisBox = document.getElementById("analysis-box");
+      document.getElementById("analysis-text").textContent = party.analysis;
+      analysisBox.style.background = party.bgColor;
+      analysisBox.style.borderColor = party.color;
+      analysisBox.style.color = party.textColor;
+    });
+
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function() {
+        const iframeCode = '<iframe src="https://robinaxelsson00.github.io/valanalys/index.html#interactive-widget-box" width="100%" height="480" frameborder="0"></iframe>';
+        navigator.clipboard.writeText(iframeCode).then(function() {
+          alert("Inbäddningskoden har kopierats till urklipp!");
+        });
+      });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initWidget);
+  } else {
+    initWidget();
+  }
+})();
+</script>
 <!-- PRESS & MEDIA KIT SEKTION -->
 <section style="background: #0f172a; border-top: 2px solid #334155; padding: 40px 20px; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; margin-top: 60px;">
   <div style="max-width: 900px; margin: 0 auto;">
