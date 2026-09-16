@@ -11,6 +11,7 @@
 </head>
 <body class="bg-[#121212] text-slate-100 font-sans p-6 space-y-8 max-w-7xl mx-auto">
 
+    <!-- Header -->
     <header class="border-b border-slate-800 pb-4">
         <h1 class="text-3xl font-bold text-white">Förtidsröster, dess geografiska position i relation till valresultat 2022</h1>
         <p class="text-slate-400 mt-1">En undersökning om förtidsröster har samband med specifika partiers väljare och dess plats</p>
@@ -18,27 +19,251 @@
 
     <!-- Grid 1: Förtidsröstning per Landskap & Parti -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
             <h2 class="text-lg font-bold text-slate-200 mb-3">1. Förtidsröstning per Landskap (%)</h2>
             <div class="h-80"><canvas id="landskapChart"></canvas></div>
         </div>
 
-        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
             <h2 class="text-lg font-bold text-slate-200 mb-3">2. Förtidsröstning per Parti (%)</h2>
             <div class="h-80"><canvas id="partiChart"></canvas></div>
         </div>
     </div>
 
-    <!-- Sektion 2: Slutgiltigt resultat (Breddad till helskärm) -->
-    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
-        <h2 class="text-lg font-bold text-slate-200 mb-3">3. Slutgiltigt Valresultat (S, M, SD per Landskap)</h2>
-        <div class="h-80"><canvas id="resultatChart"></canvas></div>
+    <!-- Sektion 3: Stacked Bar Chart för Alla Partier per Landskap -->
+    <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-xl font-bold text-white">3. Valresultat baserat enbart på Förtidsröster (Alla 8 Partier)</h2>
+                <p class="text-xs text-slate-400 mt-1">Staplat diagram uppdelat per landskap (100% total röstfördelning per region)</p>
+            </div>
+            <div class="text-xs text-slate-400 italic">
+                * Klicka på ett parti i förklaringen för att isolera det (klicka igen för att visa alla)
+            </div>
+        </div>
+
+        <div class="h-[450px] relative">
+            <canvas id="stackedResultatChart"></canvas>
+        </div>
     </div>
 
+    <!-- ANALYS- OCH STRATEGIMODULER -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-8">
+        
+        <!-- Kampanjfällan -->
+        <div style="background-color: #0f172a; color: #f8fafc; padding: 28px; border-radius: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; border: 1px solid #334155;">
+          <div style="border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 20px;">
+            <h3 style="margin: 0; color: #ffffff; font-size: 1.25rem; font-weight: 700;">Kampanjfällan: När avgörs rösterna egentligen?</h3>
+            <p style="margin: 6px 0 0 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.4;">Visar vilka partier som säkrar över 50 % av rösterna före valveckan – och vilka som är helt beroende av slutspurten på valdagen.</p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 14px; position: relative;">
+            <div style="position: absolute; left: 50%; top: 0; bottom: 0; border-left: 2px dashed #f59e0b; z-index: 1;">
+              <span style="position: absolute; top: -18px; left: -45px; background: #f59e0b; color: #000; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; white-space: nowrap;">50% RÖSTER I BOXEN</span>
+            </div>
+
+            <!-- S -->
+            <div style="display: flex; align-items: center; gap: 12px; z-index: 2;">
+              <span style="width: 30px; font-weight: 700; color: #f8fafc;">S</span>
+              <div style="flex-grow: 1; background: #1e293b; height: 24px; border-radius: 4px; overflow: hidden; display: flex;">
+                <div style="width: 54%; background: #e11d48; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700;">54%</div>
+              </div>
+              <span style="font-size: 0.75rem; color: #4ade80; font-weight: 600; width: 90px;">Tidig Mobilisering</span>
+            </div>
+
+            <!-- KD -->
+            <div style="display: flex; align-items: center; gap: 12px; z-index: 2;">
+              <span style="width: 30px; font-weight: 700; color: #f8fafc;">KD</span>
+              <div style="flex-grow: 1; background: #1e293b; height: 24px; border-radius: 4px; overflow: hidden; display: flex;">
+                <div style="width: 51%; background: #0284c7; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700;">51%</div>
+              </div>
+              <span style="font-size: 0.75rem; color: #4ade80; font-weight: 600; width: 90px;">Tidig Mobilisering</span>
+            </div>
+
+            <!-- M -->
+            <div style="display: flex; align-items: center; gap: 12px; z-index: 2;">
+              <span style="width: 30px; font-weight: 700; color: #f8fafc;">M</span>
+              <div style="flex-grow: 1; background: #1e293b; height: 24px; border-radius: 4px; overflow: hidden; display: flex;">
+                <div style="width: 48%; background: #2563eb; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700;">48%</div>
+              </div>
+              <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; width: 90px;">Balanserad</span>
+            </div>
+
+            <!-- MP -->
+            <div style="display: flex; align-items: center; gap: 12px; z-index: 2;">
+              <span style="width: 30px; font-weight: 700; color: #f8fafc;">MP</span>
+              <div style="flex-grow: 1; background: #1e293b; height: 24px; border-radius: 4px; overflow: hidden; display: flex;">
+                <div style="width: 39%; background: #16a34a; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700;">39%</div>
+              </div>
+              <span style="font-size: 0.75rem; color: #f87171; font-weight: 600; width: 90px;">Valdagsberoende</span>
+            </div>
+
+            <!-- L -->
+            <div style="display: flex; align-items: center; gap: 12px; z-index: 2;">
+              <span style="width: 30px; font-weight: 700; color: #f8fafc;">L</span>
+              <div style="flex-grow: 1; background: #1e293b; height: 24px; border-radius: 4px; overflow: hidden; display: flex;">
+                <div style="width: 37%; background: #0ea5e9; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700;">37%</div>
+              </div>
+              <span style="font-size: 0.75rem; color: #f87171; font-weight: 600; width: 90px;">Valdagsberoende</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid #334155; font-size: 0.75rem; color: #64748b; display: flex; justify-content: space-between;">
+            <span>Källa: Valmyndigheten / Valanalys 2022</span>
+            <span>Grafik: Berghs Growth Marketing</span>
+          </div>
+        </div>
+
+        <!-- Kampanjens två faser & Riskmatris -->
+        <div class="space-y-6">
+            <div style="background-color: #111827; color: #ffffff; padding: 24px; border-radius: 12px; font-family: sans-serif; border: 1px solid #1f2937;">
+              <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; color: #f3f4f6;">Kampanjens två faser: Så fördelas resurserna</h3>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div style="background: #1f2937; padding: 16px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                  <div style="font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; font-weight: 700;">FAS 1: TIDIG MOBILISERING</div>
+                  <div style="font-size: 1.2rem; font-weight: 800; margin: 4px 0 8px 0; color: #60a5fa;">Dag -24 till -3</div>
+                  <p style="font-size: 0.8rem; color: #d1d5db; margin: 0; line-height: 1.4;">
+                    <strong>Partier: S, KD</strong><br>
+                    Fokus på att slussa äldre och lojala väljare till lokaler. Budgeten bränns tidigt för att säkra "röster i boxen".
+                  </p>
+                </div>
+
+                <div style="background: #1f2937; padding: 16px; border-radius: 8px; border-left: 4px solid #ef4444;">
+                  <div style="font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; font-weight: 700;">FAS 2: SLUTSPURTEN</div>
+                  <div style="font-size: 1.2rem; font-weight: 800; margin: 4px 0 8px 0; color: #f87171;">Dag -2 till Valdag</div>
+                  <p style="font-size: 0.8rem; color: #d1d5db; margin: 0; line-height: 1.4;">
+                    <strong>Partier: MP, V, L</strong><br>
+                    Sista-sekunden-kampanjer riktade mot unga och tveksamma. Extremt sårbar för slutdebattens utgång.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div style="background: #090d16; padding: 24px; border-radius: 12px; font-family: sans-serif; color: #fff; border: 1px solid #1e293b;">
+              <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; text-align: center;">Riskmatris: Väljarmönster i valspurten</h3>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #1e293b; padding: 12px; border-radius: 8px;">
+                <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; padding: 14px; border-radius: 6px;">
+                  <div style="color: #f87171; font-weight: 700; font-size: 0.85rem;">Hög Valdagsrisk</div>
+                  <div style="font-size: 1.25rem; font-weight: 800; margin: 6px 0;">MP / L</div>
+                  <div style="font-size: 0.75rem; color: #cbd5e1;">Låg andel förtidsröster + osäkra väljare. Måste leverera i slutdebatten.</div>
+                </div>
+
+                <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; padding: 14px; border-radius: 6px;">
+                  <div style="color: #fbbf24; font-weight: 700; font-size: 0.85rem;">Rörlig Mobilisering</div>
+                  <div style="font-size: 1.25rem; font-weight: 800; margin: 6px 0;">V / C</div>
+                  <div style="font-size: 0.75rem; color: #cbd5e1;">Blandat röstningsmönster. Kräver kontinuerlig närvaro i båda faserna.</div>
+                </div>
+
+                <div style="background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; padding: 14px; border-radius: 6px;">
+                  <div style="color: #4ade80; font-weight: 700; font-size: 0.85rem;">Inlåst & Säkrat</div>
+                  <div style="font-size: 1.25rem; font-weight: 800; margin: 6px 0;">S / KD</div>
+                  <div style="font-size: 0.75rem; color: #cbd5e1;">Hög andel förtidsröster. Trygg grund långt innan valdagen.</div>
+                </div>
+
+                <div style="background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; padding: 14px; border-radius: 6px;">
+                  <div style="color: #60a5fa; font-weight: 700; font-size: 0.85rem;">Stabil Bas</div>
+                  <div style="font-size: 1.25rem; font-weight: 800; margin: 6px 0;">M / SD</div>
+                  <div style="font-size: 0.75rem; color: #cbd5e1;">Jämn fördelning mellan förhands- och valdagsväljare.</div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTERAKTIV DATAWIDGET -->
+    <div id="interactive-widget-box" style="background: #ffffff; color: #0f172a; padding: 24px; border-radius: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; margin: 40px auto;">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <span style="font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;">Data Interaktiven</span>
+        <span style="background: #e0f2fe; color: #0369a1; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 12px;">INBÄDDNINGSKLAR</span>
+      </div>
+
+      <label for="party-selector" style="font-size: 0.85rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Välj parti att granska:</label>
+      <select id="party-selector" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; font-weight: 600; font-size: 0.9rem; color: #0f172a; margin-bottom: 20px; cursor: pointer;">
+        <option value="S">Socialdemokraterna (S)</option>
+        <option value="KD">Kristdemokraterna (KD)</option>
+        <option value="M">Moderaterna (M)</option>
+        <option value="SD">Sverigedemokraterna (SD)</option>
+        <option value="C">Centerpartiet (C)</option>
+        <option value="V">Vänsterpartiet (V)</option>
+        <option value="MP">Miljöpartiet (MP)</option>
+        <option value="L">Liberalerna (L)</option>
+      </select>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: center; margin-bottom: 20px;">
+        <div style="background: #f1f5f9; padding: 16px; border-radius: 8px;">
+          <div id="early-vote-val" style="font-size: 1.8rem; font-weight: 900; color: #e11d48; transition: all 0.3s ease;">54.2%</div>
+          <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-top: 2px; text-transform: uppercase;">Röster i boxen</div>
+        </div>
+        <div style="background: #f1f5f9; padding: 16px; border-radius: 8px;">
+          <div id="election-vote-val" style="font-size: 1.8rem; font-weight: 900; color: #0f172a; transition: all 0.3s ease;">45.8%</div>
+          <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-top: 2px; text-transform: uppercase;">Valdagsröster</div>
+        </div>
+      </div>
+
+      <div id="analysis-box" style="background: #ffffff; border: 1px solid #000000; padding: 14px; font-size: 0.85rem; color: #000000; margin-bottom: 16px; line-height: 1.4; border-radius: 6px; transition: all 0.3s ease;">
+        <strong>Strategisk slutsats:</strong> <span id="analysis-text">Socialdemokraterna har en övervägande andel röstare som förtidsröstar (54,2 %). Partiet måste flytta sina kampanjresurser till de två mellersta veckorna i valrörelsen för att säkra sin mobilisering och har stor del av sina röster 'i boxen' tidigt.</span>
+      </div>
+
+      <button id="copy-widget-btn" style="width: 100%; background: #0f172a; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: background 0.2s ease;">
+        Kopiera iframe-kod för artikel (&lt;/&gt;)
+      </button>
+
+    </div>
+
+    <!-- PRESS & MEDIA KIT SEKTION -->
+    <section style="background: #0f172a; border-top: 2px solid #334155; padding: 40px 20px; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; margin-top: 60px; border-radius: 12px;">
+      <div style="max-width: 900px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px; border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 24px;">
+          <div>
+            <span style="background: #2563eb; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Press & Media Kit</span>
+            <h2 style="margin: 8px 0 4px 0; font-size: 1.5rem; color: #fff;">Resurser för Redaktioner & Journalister</h2>
+            <p style="margin: 0; color: #94a3b8; font-size: 0.9rem;">Fria data, färdiga visualiseringar och presskontakt för publicering.</p>
+          </div>
+          <div>
+            <a href="data.csv" download style="background: #22c55e; color: #000; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: 700; font-size: 0.85rem; display: inline-block;">📥 Ladda ner rådata (CSV)</a>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 30px;">
+          <!-- Fri användning & Citat -->
+          <div style="background: #1e293b; padding: 20px; border-radius: 8px; border: 1px solid #334155;">
+            <h3 style="margin-top: 0; font-size: 1rem; color: #38bdf8;">Citering & Användning</h3>
+            <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
+              Allt material och grafik får fritt användas och bäddas in av nyhetssajter och tryckta medier. Vid publicering anges:
+            </p>
+            <code style="background: #0f172a; padding: 6px 10px; border-radius: 4px; color: #f59e0b; font-size: 0.8rem; display: block; border: 1px solid #334155; margin-top: 8px;">
+              Källa: Valanalys 2022 / Valmyndigheten
+            </code>
+          </div>
+
+          <!-- Expertcitat redo att kopieras -->
+          <div style="background: #1e293b; padding: 20px; border-radius: 8px; border: 1px solid #334155;">
+            <h3 style="margin-top: 0; font-size: 1rem; color: #38bdf8;">Presskommentar (Fri att citera)</h3>
+            <blockquote style="margin: 0; font-size: 0.85rem; color: #e2e8f0; font-style: italic; border-left: 3px solid #2563eb; padding-left: 10px; line-height: 1.4;">
+              "Förtidsröstningen har helt ritat om partiernas marknadsföringsplaner. Partierna lägger enorma resurser på att beräkna exakt när deras unika väljare 'stänger dörren' och anpassar sina budskap därefter."
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Kontaktinfo -->
+        <div style="background: #0284c7; padding: 20px; border-radius: 8px; color: #fff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <strong style="display: block; font-size: 1rem;">Presskontakt & Analysfrågor:</strong>
+            <span style="font-size: 0.85rem; opacity: 0.9;">Robin Axelsson – Growth Marketing, Berghs School of Communication</span>
+          </div>
+          <div>
+            <a href="mailto:robin.axelsson@student.berghs.se" style="background: #fff; color: #0284c7; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">Kontakta för kommentar</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCRIPTS -->
     <script>
-        // -------------------------------------------------------------
-        // DATASET 1: Förtidsröstning per Valdistrikt
-        // -------------------------------------------------------------
+        // DATASET 1: Förtidsröstning per Landskap
         const landskapLabels = ['Uppland', 'Västerbotten', 'Gotland', 'Skåne', 'Halland', 'Bohuslän', 'Västergötland', 'Öland', 'Jönköping', 'Östergötland', 'Kronoberg', 'Jämtland', 'Närke', 'Kalmar', 'Västmanland', 'Norrbotten', 'Södermanland', 'Ångermanland', 'Värmland', 'Gästrikland', 'Dalarna', 'Medelpad', 'Hälsingland', 'Dalsland', 'Härjedalen'];
         const landskapFortidData = [54.8, 53.2, 52.0, 51.2, 50.5, 49.8, 47.5, 46.5, 46.0, 45.2, 44.1, 44.0, 43.8, 43.5, 42.5, 42.1, 41.8, 41.5, 41.0, 40.2, 39.5, 39.2, 38.8, 38.0, 37.5];
 
@@ -56,9 +281,7 @@
             options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 30, max: 60 } } }
         });
 
-        // -------------------------------------------------------------
         // DATASET 2: Förtidsröstning per Parti
-        // -------------------------------------------------------------
         const partyLabels = ['KD', 'S', 'C', 'M', 'L', 'MP', 'V', 'SD'];
         const partyFortidData = [49.1, 48.6, 46.8, 45.9, 45.2, 42.1, 41.3, 38.4];
         const partyColors = ['#005ea1', '#e41b13', '#006a35', '#015293', '#006ab3', '#83cf39', '#da291c', '#eab308'];
@@ -77,342 +300,181 @@
             options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { min: 30, max: 55 } } }
         });
 
-        // -------------------------------------------------------------
-        // DATASET 3: Slutgiltigt Valresultat (S, M, SD per Landskap)
-        // -------------------------------------------------------------
-        const sTotalt = [27.5, 39.5, 29.5, 23.8, 22.0, 23.8, 29.5, 28.8, 22.2, 29.8, 24.8, 32.0, 31.8, 30.5, 31.8, 40.8, 30.5, 36.5, 33.0, 26.8, 26.5, 34.8, 32.5, 24.2, 24.5];
-        const mTotalt = [28.2, 15.2, 21.5, 22.0, 26.8, 26.5, 21.2, 18.8, 21.5, 20.2, 19.8, 17.0, 18.0, 17.5, 17.5, 13.8, 18.2, 13.5, 16.5, 15.5, 16.8, 14.2, 14.8, 14.5, 13.0];
-        const sdTotalt = [14.8, 12.8, 13.8, 26.8, 18.8, 17.2, 19.8, 19.8, 25.8, 19.5, 25.2, 16.2, 19.5, 21.5, 21.2, 16.8, 20.8, 18.5, 20.2, 28.0, 27.5, 19.5, 21.2, 27.2, 28.5];
+        // DATASET 3: STACKED BAR CHART (ALLA 8 PARTIER FÖR ALLA LANDSKAP)
+        const sData = [26.5, 41.2, 31.1, 28.2, 27.6, 27.8, 30.4, 32.0, 27.5, 31.6, 30.5, 34.9, 34.7, 34.0, 35.2, 43.8, 34.1, 40.4, 35.8, 34.3, 32.0, 38.4, 36.3, 32.4, 31.6];
+        const mData = [25.8, 15.8, 22.4, 21.5, 24.2, 24.9, 21.9, 18.8, 21.0, 19.9, 19.6, 17.2, 18.4, 17.8, 17.3, 13.6, 18.3, 13.8, 16.6, 15.2, 16.4, 14.6, 14.9, 14.9, 13.2];
+        const sdData = [13.5, 11.2, 12.8, 21.5, 16.7, 15.3, 17.3, 19.1, 21.2, 17.3, 21.0, 14.8, 17.6, 19.1, 19.4, 15.3, 18.9, 16.8, 18.3, 23.6, 23.1, 17.8, 19.2, 25.0, 26.1];
+        const cData = [7.2, 7.8, 10.0, 6.2, 8.5, 7.4, 6.8, 8.2, 8.2, 7.1, 7.7, 9.2, 6.8, 8.2, 7.1, 6.4, 6.9, 7.2, 7.3, 6.6, 7.6, 7.4, 7.6, 7.4, 8.4];
+        const vData = [8.8, 9.2, 7.3, 6.8, 5.4, 6.4, 7.2, 6.0, 4.5, 5.9, 5.3, 8.3, 7.1, 5.8, 6.5, 8.5, 6.6, 8.0, 6.8, 6.9, 6.3, 8.0, 7.4, 5.9, 6.5];
+        const mpData = [7.8, 6.2, 6.9, 5.2, 5.2, 6.0, 5.5, 4.3, 3.8, 4.9, 4.1, 5.7, 5.0, 4.0, 4.2, 4.6, 4.5, 4.3, 4.4, 3.9, 4.1, 4.0, 4.2, 3.7, 3.7];
+        const kdData = [4.8, 4.8, 4.9, 5.2, 6.7, 6.4, 6.0, 7.4, 10.2, 8.4, 8.4, 6.0, 6.1, 7.5, 5.8, 4.6, 6.6, 6.2, 6.5, 5.9, 6.6, 6.4, 6.3, 7.2, 7.2];
+        const lData = [5.6, 3.8, 4.5, 5.4, 5.8, 5.8, 4.8, 4.2, 3.6, 4.8, 3.5, 3.9, 4.2, 3.7, 4.4, 3.2, 4.2, 3.3, 4.2, 3.7, 3.9, 3.4, 4.1, 3.4, 3.4];
 
-        new Chart(document.getElementById('resultatChart'), {
-            type: 'bar',
-            data: {
-                labels: landskapLabels,
-                datasets: [
-                    { label: 'S (%)', data: sTotalt, backgroundColor: '#ef4444' },
-                    { label: 'M (%)', data: mTotalt, backgroundColor: '#3b82f6' },
-                    { label: 'SD (%)', data: sdTotalt, backgroundColor: '#eab308' }
-                ]
+        new Chart(document.getElementById('stackedResultatChart'), {
+    type: 'bar',
+    data: {
+        labels: landskapLabels,
+        datasets: [
+            { label: 'Socialdemokraterna (S)', data: sData, backgroundColor: '#e41b13', hoverBackgroundColor: '#ff4d4d' },
+            { label: 'Moderaterna (M)', data: mData, backgroundColor: '#015293', hoverBackgroundColor: '#3385ff' },
+            { label: 'Sverigedemokraterna (SD)', data: sdData, backgroundColor: '#eab308', hoverBackgroundColor: '#fde047' },
+            { label: 'Centerpartiet (C)', data: cData, backgroundColor: '#006a35', hoverBackgroundColor: '#10b981' },
+            { label: 'Vänsterpartiet (V)', data: vData, backgroundColor: '#da291c', hoverBackgroundColor: '#f87171' },
+            { label: 'Miljöpartiet (MP)', data: mpData, backgroundColor: '#83cf39', hoverBackgroundColor: '#a3e635' },
+            { label: 'Kristdemokraterna (KD)', data: kdData, backgroundColor: '#005ea1', hoverBackgroundColor: '#38bdf8' },
+            { label: 'Liberalerna (L)', data: lData, backgroundColor: '#006ab3', hoverBackgroundColor: '#60a5fa' }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    color: '#e2e8f0',
+                    padding: 15,
+                    font: { size: 12, weight: 'bold' },
+                    usePointStyle: true,
+                    pointStyle: 'circle'
+                },
+                // SKRÄDDARSYDD ISOLERINGS-LOGIK VID KLICK
+                onClick: function(e, legendItem, legend) {
+                    const ci = legend.chart;
+                    const clickedIndex = legendItem.datasetIndex;
+                    
+                    // Kontrollera om det klickade partiet redan är det enda synliga
+                    const isOnlyVisible = ci.data.datasets.every((ds, idx) => 
+                        idx === clickedIndex ? !ci.isDatasetVisible(idx) : !ci.isDatasetVisible(idx)
+                    );
+
+                    // Om bara detta parti är synligt -> Återställ och visa alla partier
+                    const currentlyVisibleCount = ci.data.datasets.filter((ds, idx) => ci.isDatasetVisible(idx)).length;
+                    
+                    if (currentlyVisibleCount === 1 && ci.isDatasetVisible(clickedIndex)) {
+                        ci.data.datasets.forEach((ds, idx) => {
+                            ci.setDatasetVisibility(idx, true);
+                        });
+                    } else {
+                        // Annars -> Dölj alla andra partier och visa enbart det valda
+                        ci.data.datasets.forEach((ds, idx) => {
+                            ci.setDatasetVisibility(idx, idx === clickedIndex);
+                        });
+                    }
+                    ci.update();
+                }
             },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 50 } } }
-        });
+            tooltip: {
+                backgroundColor: '#0f172a',
+                titleColor: '#f8fafc',
+                bodyColor: '#e2e8f0',
+                borderColor: '#334155',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6,
+                usePointStyle: true,
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': ' + context.raw + '%';
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                stacked: true,
+                ticks: { color: '#94a3b8', font: { size: 11 } },
+                grid: { display: false }
+            },
+            y: {
+                stacked: true,
+                min: 0,
+                max: 100,
+                ticks: {
+                    color: '#94a3b8',
+                    callback: function(value) { return value + '%'; }
+                },
+                grid: { color: '#334155' }
+            }
+        }
+    }
+});
+
+        // WIDGET-LOGIK
+        (function() {
+          const partyData = {
+            S: {
+              early: "54.2%", valdag: "45.8%", color: "#e11d48", bgColor: "#ffffff", textColor: "#000000",
+              analysis: "Socialdemokraterna har en övervägande andel röstare som förtidsröstar (54,2 %). Partiet måste flytta sina kampanjresurser till de två mellersta veckorna i valrörelsen för att säkra sin mobilisering och har stor del av sina röster 'i boxen' tidigt."
+            },
+            KD: {
+              early: "51.0%", valdag: "49.0%", color: "#0284c7", bgColor: "#ffffff", textColor: "#000000",
+              analysis: "Kristdemokraterna nådde över 50 % i förtidsröster tack vare sin lojala väljarbas. Mobiliseringsinsatserna sker i huvudsak före sista kampanjveckan."
+            },
+            M: {
+              early: "48.0%", valdag: "52.0%", color: "#2563eb", bgColor: "#ffffff", textColor: "#000000",
+              analysis: "Moderaterna har en mycket balanserad väljarkår med 48,0 % förtidsröster. Kampanjbudgeten fördelas jämnt mellan tidig synlighet och sista helgens slutspurt."
+            },
+            SD: {
+              early: "46.0%", valdag: "54.0%", color: "#d97706", bgColor: "#ffffff", textColor: "#000000",
+              analysis: "Sverigedemokraterna har 46,0 % förtidsröster. De kombinerar stark förtidsröstning på landsbygden med en betydande mobilisering på själva valdagen."
+            },
+            C: {
+              early: "44.0%", valdag: "56.0%", color: "#15803d", bgColor: "#ffffff", textColor: "#000000",
+              analysis: "Centerpartiet har 44,0 % förtidsröster. Deras väljarkår väntar i högre grad in slutdebatterna jämfört med traditionella förtidsröstningspartier."
+            },
+            V: {
+              early: "41.0%", valdag: "59.0%", color: "#dc2626", bgColor: "#ffffff", textColor: "#000000",
+              analysis: "Vänsterpartiet har 41,0 % förtidsröster. Med många väljare faller en stor del av rösterna direkt i vallokalen på valdagen."
+            },
+            MP: {
+              early: "39.0%", valdag: "61.0%", color: "#16a34a", bgColor: "#ffffff", textColor: "#000000",
+              analysis: "Miljöpartiet ligger i riskzonen med endast 39,0 % förtidsröster. Stor del av valframgången hänger på slutspurten och exponeringen i slutdebatterna."
+            },
+            L: {
+              early: "37.0%", valdag: "63.0%", color: "#0ea5e9", bgColor: "#ffffff", textColor: "#000000",
+              analysis: "Liberalerna är mest valdagsberoende med 37,0 % förtidsröster. Partiet har historiskt en stor andel väljare som bestämmer sig i vallokalen under valhelgen."
+            }
+          };
+
+          function initWidget() {
+            const selectElem = document.getElementById("party-selector");
+            const copyBtn = document.getElementById("copy-widget-btn");
+
+            if (!selectElem) return;
+
+            selectElem.addEventListener("change", function() {
+              const party = partyData[this.value];
+              if (!party) return;
+
+              document.getElementById("early-vote-val").textContent = party.early;
+              document.getElementById("early-vote-val").style.color = party.color;
+              document.getElementById("election-vote-val").textContent = party.valdag;
+
+              const analysisBox = document.getElementById("analysis-box");
+              document.getElementById("analysis-text").textContent = party.analysis;
+              analysisBox.style.background = party.bgColor;
+              analysisBox.style.borderColor = "#000000";
+              analysisBox.style.color = party.textColor;
+            });
+
+            if (copyBtn) {
+              copyBtn.addEventListener("click", function() {
+                const iframeCode = '<iframe src="https://robinaxelsson00.github.io/valanalys/index.html#interactive-widget-box" width="100%" height="480" frameborder="0"></iframe>';
+                navigator.clipboard.writeText(iframeCode).then(function() {
+                  alert("Inbäddningskoden har kopierats till urklipp!");
+                });
+              });
+            }
+          }
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initWidget);
+          } else {
+            initWidget();
+          }
+        })();
     </script>
 </body>
 </html>
-
-<div style="background-color: #0f172a; color: #f8fafc; padding: 28px; border-radius: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 650px; border: 1px solid #334155;">
-  <div style="border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 20px;">
-    <h3 style="margin: 0; color: #ffffff; font-size: 1.25rem; font-weight: 700;">Kampanjfällan: När avgörs rösterna egentligen?</h3>
-    <p style="margin: 6px 0 0 0; color: #94a3b8; font-size: 0.875rem; line-height: 1.4;">Visar vilka partier som säkrar över 50 % av rösterna före valveckan – och vilka som är helt beroende av slutspurten på valdagen.</p>
-  </div>
-
-  <div style="display: flex; flex-direction: column; gap: 14px; position: relative;">
-    <!-- Kritiska gränsen-linje -->
-    <div style="position: absolute; left: 50%; top: 0; bottom: 0; border-left: 2px dashed #f59e0b; z-index: 1;">
-      <span style="position: absolute; top: -18px; left: -45px; background: #f59e0b; color: #000; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; white-space: nowrap;">50% RÖSTER I BOXEN</span>
-    </div>
-
-    <!-- S -->
-    <div style="display: flex; align-items: center; gap: 12px; z-index: 2;">
-      <span style="width: 30px; font-weight: 700; color: #f8fafc;">S</span>
-      <div style="flex-grow: 1; background: #1e293b; height: 24px; border-radius: 4px; overflow: hidden; display: flex;">
-        <div style="width: 54%; background: #e11d48; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700;">54%</div>
-      </div>
-      <span style="font-size: 0.75rem; color: #4ade80; font-weight: 600; width: 90px;">Tidig Mobilisering</span>
-    </div>
-
-    <!-- KD -->
-    <div style="display: flex; align-items: center; gap: 12px; z-index: 2;">
-      <span style="width: 30px; font-weight: 700; color: #f8fafc;">KD</span>
-      <div style="flex-grow: 1; background: #1e293b; height: 24px; border-radius: 4px; overflow: hidden; display: flex;">
-        <div style="width: 51%; background: #0284c7; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700;">51%</div>
-      </div>
-      <span style="font-size: 0.75rem; color: #4ade80; font-weight: 600; width: 90px;">Tidig Mobilisering</span>
-    </div>
-
-    <!-- M -->
-    <div style="display: flex; align-items: center; gap: 12px; z-index: 2;">
-      <span style="width: 30px; font-weight: 700; color: #f8fafc;">M</span>
-      <div style="flex-grow: 1; background: #1e293b; height: 24px; border-radius: 4px; overflow: hidden; display: flex;">
-        <div style="width: 48%; background: #2563eb; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700;">48%</div>
-      </div>
-      <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; width: 90px;">Balanserad</span>
-    </div>
-
-    <!-- MP -->
-    <div style="display: flex; align-items: center; gap: 12px; z-index: 2;">
-      <span style="width: 30px; font-weight: 700; color: #f8fafc;">MP</span>
-      <div style="flex-grow: 1; background: #1e293b; height: 24px; border-radius: 4px; overflow: hidden; display: flex;">
-        <div style="width: 39%; background: #16a34a; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700;">39%</div>
-      </div>
-      <span style="font-size: 0.75rem; color: #f87171; font-weight: 600; width: 90px;">Valdagsberoende</span>
-    </div>
-
-    <!-- L -->
-    <div style="display: flex; align-items: center; gap: 12px; z-index: 2;">
-      <span style="width: 30px; font-weight: 700; color: #f8fafc;">L</span>
-      <div style="flex-grow: 1; background: #1e293b; height: 24px; border-radius: 4px; overflow: hidden; display: flex;">
-        <div style="width: 37%; background: #0ea5e9; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700;">37%</div>
-      </div>
-      <span style="font-size: 0.75rem; color: #f87171; font-weight: 600; width: 90px;">Valdagsberoende</span>
-    </div>
-  </div>
-
-  <div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid #334155; font-size: 0.75rem; color: #64748b; display: flex; justify-content: space-between;">
-    <span>Källa: Valmyndigheten / Valanalys 2022</span>
-    <span>Grafik: Berghs Growth Marketing</span>
-  </div>
-</div>
-<div style="background-color: #111827; color: #ffffff; padding: 24px; border-radius: 12px; font-family: sans-serif; max-width: 650px;">
-  <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; color: #f3f4f6;">Kampanjens två faser: Så fördelas resurserna</h3>
-  
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-    <!-- Fas 1 -->
-    <div style="background: #1f2937; padding: 16px; border-radius: 8px; border-left: 4px solid #3b82f6;">
-      <div style="font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; font-weight: 700;">FAS 1: TIDIG MOBILISERING</div>
-      <div style="font-size: 1.2rem; font-weight: 800; margin: 4px 0 8px 0; color: #60a5fa;">Dag -24 till -3</div>
-      <p style="font-size: 0.8rem; color: #d1d5db; margin: 0; line-height: 1.4;">
-        <strong>Partier: S, KD</strong><br>
-        Fokus på att slussa äldre och lojala väljare till lokaler. Budgeten bränns tidigt för att säkra "röster i boxen".
-      </p>
-    </div>
-
-    <!-- Fas 2 -->
-    <div style="background: #1f2937; padding: 16px; border-radius: 8px; border-left: 4px solid #ef4444;">
-      <div style="font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; font-weight: 700;">FAS 2: SLUTSPURTEN</div>
-      <div style="font-size: 1.2rem; font-weight: 800; margin: 4px 0 8px 0; color: #f87171;">Dag -2 till Valdag</div>
-      <p style="font-size: 0.8rem; color: #d1d5db; margin: 0; line-height: 1.4;">
-        <strong>Partier: MP, V, L</strong><br>
-        Sista-sekunden-kampanjer riktade mot unga och tveksamma. Extremt sårbar för slutdebattens utgång.
-      </p>
-    </div>
-  </div>
-</div>
-<div style="background: #090d16; padding: 24px; border-radius: 12px; font-family: sans-serif; max-width: 600px; color: #fff;">
-  <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; text-align: center;">Riskmatris: Väljarmönster i valspurten</h3>
-  
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #1e293b; padding: 12px; border-radius: 8px;">
-    <!-- Kvadrant 1 -->
-    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; padding: 14px; border-radius: 6px;">
-      <div style="color: #f87171; font-weight: 700; font-size: 0.85rem;">Hög Valdagsrisk</div>
-      <div style="font-size: 1.25rem; font-weight: 800; margin: 6px 0;">MP / L</div>
-      <div style="font-size: 0.75rem; color: #cbd5e1;">Låg andel förtidsröster + osäkra väljare. Måste leverera i slutdebatten.</div>
-    </div>
-
-    <!-- Kvadrant 2 -->
-    <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; padding: 14px; border-radius: 6px;">
-      <div style="color: #fbbf24; font-weight: 700; font-size: 0.85rem;">Rörlig Mobilisering</div>
-      <div style="font-size: 1.25rem; font-weight: 800; margin: 6px 0;">V / C</div>
-      <div style="font-size: 0.75rem; color: #cbd5e1;">Blandat röstningsmönster. Kräver kontinuerlig närvaro i båda faserna.</div>
-    </div>
-
-    <!-- Kvadrant 3 -->
-    <div style="background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; padding: 14px; border-radius: 6px;">
-      <div style="color: #4ade80; font-weight: 700; font-size: 0.85rem;">Inlåst & Säkrat</div>
-      <div style="font-size: 1.25rem; font-weight: 800; margin: 6px 0;">S / KD</div>
-      <div style="font-size: 0.75rem; color: #cbd5e1;">Hög andel förtidsröster. Trygg grund långt innan valdagen.</div>
-    </div>
-
-    <!-- Kvadrant 4 -->
-    <div style="background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; padding: 14px; border-radius: 6px;">
-      <div style="color: #60a5fa; font-weight: 700; font-size: 0.85rem;">Stabil Bas</div>
-      <div style="font-size: 1.25rem; font-weight: 800; margin: 6px 0;">M / SD</div>
-      <div style="font-size: 0.75rem; color: #cbd5e1;">Jämn fördelning mellan förhands- och valdagsväljare.</div>
-    </div>
-  </div>
-</div>
-<!-- INTERAKTIV DATAWIDGET -->
-<div id="interactive-widget-box" style="background: #ffffff; color: #0f172a; padding: 24px; border-radius: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; margin: 20px 0;">
-  
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-    <span style="font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;">Data Interaktiven</span>
-    <span style="background: #e0f2fe; color: #0369a1; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 12px;">INBÄDDNINGSKLAR</span>
-  </div>
-
-  <label for="party-selector" style="font-size: 0.85rem; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Välj parti att granska:</label>
-  <select id="party-selector" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; font-weight: 600; font-size: 0.9rem; color: #0f172a; margin-bottom: 20px; cursor: pointer;">
-    <option value="S">Socialdemokraterna (S)</option>
-    <option value="KD">Kristdemokraterna (KD)</option>
-    <option value="M">Moderaterna (M)</option>
-    <option value="SD">Sverigedemokraterna (SD)</option>
-    <option value="C">Centerpartiet (C)</option>
-    <option value="V">Vänsterpartiet (V)</option>
-    <option value="MP">Miljöpartiet (MP)</option>
-    <option value="L">Liberalerna (L)</option>
-  </select>
-
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: center; margin-bottom: 20px;">
-    <div style="background: #f1f5f9; padding: 16px; border-radius: 8px;">
-      <div id="early-vote-val" style="font-size: 1.8rem; font-weight: 900; color: #e11d48; transition: all 0.3s ease;">54.2%</div>
-      <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-top: 2px; text-transform: uppercase;">Röster i boxen</div>
-    </div>
-    <div style="background: #f1f5f9; padding: 16px; border-radius: 8px;">
-      <div id="election-vote-val" style="font-size: 1.8rem; font-weight: 900; color: #0f172a; transition: all 0.3s ease;">45.8%</div>
-      <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-top: 2px; text-transform: uppercase;">Valdagsröster</div>
-    </div>
-  </div>
-
-  <div id="analysis-box" style="background: #ffffff; border: 1px solid #000000; padding: 14px; font-size: 0.85rem; color: #000000; margin-bottom: 16px; line-height: 1.4; border-radius: 6px; transition: all 0.3s ease;">
-    <strong>Strategisk slutsats:</strong> <span id="analysis-text">Socialdemokraterna har en övervägande andel röstare som förtidsröstar (54,2 %). Partiet måste flytta sina kampanjresurser till de två mellersta veckorna i valrörelsen för att säkra sin mobilisering och har stor del av sina röster 'i boxen' tidigt.</span>
-  </div>
-
-  <button id="copy-widget-btn" style="width: 100%; background: #0f172a; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: background 0.2s ease;">
-    Kopiera iframe-kod för artikel (&lt;/&gt;)
-  </button>
-
-</div>
-
-<script>
-(function() {
-  const partyData = {
-    S: {
-      early: "54.2%",
-      valdag: "45.8%",
-      color: "#e11d48",
-      bgColor: "#ffffff",
-      textColor: "#000000",
-      analysis: "Socialdemokraterna har en övervägande andel röstare som förtidsröstar (54,2 %). Partiet måste flytta sina kampanjresurser till de två mellersta veckorna i valrörelsen för att säkra sin mobilisering och har stor del av sina röster 'i boxen' tidigt."
-    },
-    KD: {
-      early: "51.0%",
-      valdag: "49.0%",
-      color: "#0284c7",
-      bgColor: "#ffffff",
-      textColor: "#000000",
-      analysis: "Kristdemokraterna nådde över 50 % i förtidsröster tack vare sin lojala väljarbas. Mobiliseringsinsatserna sker i huvudsak före sista kampanjveckan."
-    },
-    M: {
-      early: "48.0%",
-      valdag: "52.0%",
-      color: "#2563eb",
-      bgColor: "#ffffff",
-      textColor: "#000000",
-      analysis: "Moderaterna har en mycket balanserad väljarkår med 48,0 % förtidsröster. Kampanjbudgeten fördelas jämnt mellan tidig synlighet och sista helgens slutspurt."
-    },
-    SD: {
-      early: "46.0%",
-      valdag: "54.0%",
-      color: "#d97706",
-      bgColor: "#ffffff",
-      textColor: "#000000",
-      analysis: "Sverigedemokraterna har 46,0 % förtidsröster. De kombinerar stark förtidsröstning på landsbygden med en betydande mobilisering på själva valdagen."
-    },
-    C: {
-      early: "44.0%",
-      valdag: "56.0%",
-      color: "#15803d",
-      bgColor: "#ffffff",
-      textColor: "#000000",
-      analysis: "Centerpartiet har 44,0 % förtidsröster. Deras väljarkår väntar i högre grad in slutdebatterna jämfört med traditionella förtidsröstningspartier."
-    },
-    V: {
-      early: "41.0%",
-      valdag: "59.0%",
-      color: "#dc2626",
-      bgColor: "#ffffff",
-      textColor: "#000000",
-      analysis: "Vänsterpartiet har 41,0 % förtidsröster. Med många väljare faller en stor del av rösterna direkt i vallokalen på valdagen."
-    },
-    MP: {
-      early: "39.0%",
-      valdag: "61.0%",
-      color: "#16a34a",
-      bgColor: "#ffffff",
-      textColor: "#000000",
-      analysis: "Miljöpartiet ligger i riskzonen med endast 39,0 % förtidsröster. Stor del av valframgången hänger på slutspurten och exponeringen i slutdebatterna."
-    },
-    L: {
-      early: "37.0%",
-      valdag: "63.0%",
-      color: "#0ea5e9",
-      bgColor: "#ffffff",
-      textColor: "#000000",
-      analysis: "Liberalerna är mest valdagsberoende med 37,0 % förtidsröster. Partiet har historiskt en stor andel väljare som bestämmer sig i vallokalen under valhelgen."
-    }
-  };
-
-  function initWidget() {
-    const selectElem = document.getElementById("party-selector");
-    const copyBtn = document.getElementById("copy-widget-btn");
-
-    if (!selectElem) return;
-
-    selectElem.addEventListener("change", function() {
-      const party = partyData[this.value];
-      if (!party) return;
-
-      document.getElementById("early-vote-val").textContent = party.early;
-      document.getElementById("early-vote-val").style.color = party.color;
-      document.getElementById("election-vote-val").textContent = party.valdag;
-
-      const analysisBox = document.getElementById("analysis-box");
-      document.getElementById("analysis-text").textContent = party.analysis;
-      analysisBox.style.background = party.bgColor;
-      analysisBox.style.borderColor = "#000000";
-      analysisBox.style.color = party.textColor;
-    });
-
-    if (copyBtn) {
-      copyBtn.addEventListener("click", function() {
-        const iframeCode = '<iframe src="https://robinaxelsson00.github.io/valanalys/index.html#interactive-widget-box" width="100%" height="480" frameborder="0"></iframe>';
-        navigator.clipboard.writeText(iframeCode).then(function() {
-          alert("Inbäddningskoden har kopierats till urklipp!");
-        });
-      });
-    }
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initWidget);
-  } else {
-    initWidget();
-  }
-})();
-</script>
-<!-- PRESS & MEDIA KIT SEKTION -->
-<section style="background: #0f172a; border-top: 2px solid #334155; padding: 40px 20px; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; margin-top: 60px;">
-  <div style="max-width: 900px; margin: 0 auto;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px; border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 24px;">
-      <div>
-        <span style="background: #2563eb; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Press & Media Kit</span>
-        <h2 style="margin: 8px 0 4px 0; font-size: 1.5rem; color: #fff;">Resurser för Redaktioner & Journalister</h2>
-        <p style="margin: 0; color: #94a3b8; font-size: 0.9rem;">Fria data, färdiga visualiseringar och presskontakt för publicering.</p>
-      </div>
-      <div>
-        <a href="data.csv" download style="background: #22c55e; color: #000; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: 700; font-size: 0.85rem; display: inline-block;">📥 Ladda ner rådata (CSV)</a>
-      </div>
-    </div>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 30px;">
-      <!-- Fri användning & Citat -->
-      <div style="background: #1e293b; padding: 20px; border-radius: 8px; border: 1px solid #334155;">
-        <h3 style="margin-top: 0; font-size: 1rem; color: #38bdf8;">Citering & Användning</h3>
-        <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
-          Allt material och grafik får fritt användas och bäddas in av nyhetssajter och tryckta medier. Vid publicering anges:
-        </p>
-        <code style="background: #0f172a; padding: 6px 10px; border-radius: 4px; color: #f59e0b; font-size: 0.8rem; display: block; border: 1px solid #334155;">
-          Källa: Valanalys 2022 / Valmyndigheten
-        </code>
-      </div>
-
-      <!-- Expertcitat redo att kopieras -->
-      <div style="background: #1e293b; padding: 20px; border-radius: 8px; border: 1px solid #334155;">
-        <h3 style="margin-top: 0; font-size: 1rem; color: #38bdf8;">Presskommentar (Fri att citera)</h3>
-        <blockquote style="margin: 0; font-size: 0.85rem; color: #e2e8f0; font-style: italic; border-left: 3px solid #2563eb; padding-left: 10px; line-height: 1.4;">
-          "Förtidsröstningen har helt ritat om partiernas marknadsföringsplaner. Partierna lägger enorma resurser på att beräkna exakt när deras unika väljare 'stänger dörren' och anpassar sina budskap därefter."
-        </blockquote>
-      </div>
-    </div>
-
-    <!-- Kontaktinfo -->
-    <div style="background: #0284c7; padding: 20px; border-radius: 8px; color: #fff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-      <div>
-        <strong style="display: block; font-size: 1rem;">Presskontakt & Analysfrågor:</strong>
-        <span style="font-size: 0.85rem; opacity: 0.9;">Robin Axelsson – Growth Marketing, Berghs School of Communication</span>
-      </div>
-      <div>
-        <a href="mailto:robin.axelsson@student.berghs.se" style="background: #fff; color: #0284c7; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">Kontakta för kommentar</a>
-      </div>
-    </div>
-  </div>
-</section>
