@@ -295,3 +295,7 @@ body {
     height: 1px;
     background-color: rgba(17, 17, 17, 0.4);
 }
+/* Justerar placeringen BARA för kontaktbilden */
+.hover-reveal-img[src*="DSC_4050"] {
+    object-position: center 10% !important;
+}
