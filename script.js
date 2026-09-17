@@ -52,26 +52,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-// Klick-spårning för rubriker till dataLayer (VG-krav)
 document.addEventListener("DOMContentLoaded", function () {
-  const headings = document.querySelectorAll("h1, h2, h3, .track-click");
+  // Här lägger vi till .item-text så att dina <span> fångas upp!
+  const clickableElements = document.querySelectorAll("h1, h2, h3, .item-text, .track-click");
 
-  headings.forEach(function (heading) {
-    heading.style.cursor = "pointer";
+  clickableElements.forEach(function (element) {
+    element.style.cursor = "pointer";
 
-    heading.addEventListener("click", function () {
-      const headingText = this.innerText.trim();
-      const headingTag = this.tagName;
+    element.addEventListener("click", function (e) {
+      const clickedText = this.innerText.trim();
+      const tagType = this.tagName;
 
       window.dataLayer = window.dataLayer || [];
 
       window.dataLayer.push({
         'event': 'heading_click',
-        'heading_text': headingText,
-        'heading_type': headingTag
+        'heading_text': clickedText,
+        'heading_type': tagType
       });
 
-      console.log("dataLayer event pushed:", headingText);
+      console.log("Custom dataLayer event pushed:", clickedText);
     });
   });
 });
