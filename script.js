@@ -56,22 +56,20 @@ document.addEventListener("DOMContentLoaded", function () {
   // Här lägger vi till .item-text så att dina <span> fångas upp!
   const clickableElements = document.querySelectorAll("h1, h2, h3, .item-text, .track-click");
 
+if (clickableElements && clickableElements.length > 0) {
   clickableElements.forEach(function (element) {
-    element.style.cursor = "pointer";
-
     element.addEventListener("click", function (e) {
-      const clickedText = this.innerText.trim();
+      const clickedText = this.innerText ? this.innerText.trim() : "";
       const tagType = this.tagName;
 
       window.dataLayer = window.dataLayer || [];
-
       window.dataLayer.push({
         'event': 'heading_click',
         'heading_text': clickedText,
         'heading_type': tagType
       });
 
-      console.log("Custom dataLayer event pushed:", clickedText);
+      console.log("Custom event pushed:", clickedText);
     });
   });
-});
+}
