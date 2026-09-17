@@ -72,4 +72,3 @@ if (clickableElements && clickableElements.length > 0) {
       console.log("Custom event pushed:", clickedText);
     });
   });
-}
