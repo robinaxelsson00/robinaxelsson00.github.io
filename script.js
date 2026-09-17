@@ -52,3 +52,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// Klick-spårning för rubriker till dataLayer (VG-krav)
+document.addEventListener("DOMContentLoaded", function () {
+  const headings = document.querySelectorAll("h1, h2, h3, .track-click");
+
+  headings.forEach(function (heading) {
+    heading.style.cursor = "pointer";
+
+    heading.addEventListener("click", function () {
+      const headingText = this.innerText.trim();
+      const headingTag = this.tagName;
+
+      window.dataLayer = window.dataLayer || [];
+
+      window.dataLayer.push({
+        'event': 'heading_click',
+        'heading_text': headingText,
+        'heading_type': headingTag
+      });
+
+      console.log("dataLayer event pushed:", headingText);
+    });
+  });
+});
