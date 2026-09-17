@@ -2,17 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const cursor = document.querySelector('.custom-cursor');
     const revealContainer = document.querySelector('.hover-reveal');
     const revealImg = document.querySelector('.hover-reveal-img');
-    const revealVideo = document.querySelector('.hover-reveal-video'); // Hämtar video-elementet
+    const revealVideo = document.querySelector('.hover-reveal-video');
     const revealItems = document.querySelectorAll('.reveal-item');
 
-    // Följ musrörelsen för den anpassade rektangeln
+    // 1. Muspekare & Interaktivitet
     if (cursor) {
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = `${e.clientX}px`;
             cursor.style.top = `${e.clientY}px`;
         });
 
-        // Förstoring av muspekaren vid hovring på länkar och interaktiva element
         const interactiveElements = document.querySelectorAll('a, button, select, input, .reveal-item');
         interactiveElements.forEach(el => {
             el.addEventListener('mouseenter', () => {
@@ -24,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Fullskärms Hover Reveal (Bilder & Videor)
+    // 2. Fullskärms Hover Reveal (Bilder & Videor)
     if (revealContainer && revealItems.length > 0) {
         revealItems.forEach(item => {
             item.addEventListener('mouseenter', () => {
@@ -51,24 +50,25 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // 3. Säker Klickspårning för DataLayer (VG-krav)
+    const clickableElements = document.querySelectorAll("h1, h2, h3, .item-text, .track-click");
+
+    if (clickableElements && clickableElements.length > 0) {
+        clickableElements.forEach(function (element) {
+            element.addEventListener("click", function (e) {
+                const clickedText = this.innerText ? this.innerText.trim() : "";
+                const tagType = this.tagName;
+
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'heading_click',
+                    'heading_text': clickedText,
+                    'heading_type': tagType
+                });
+
+                console.log("Custom event pushed:", clickedText);
+            });
+        });
+    }
 });
-document.addEventListener("DOMContentLoaded", function () {
-  // Här lägger vi till .item-text så att dina <span> fångas upp!
-  const clickableElements = document.querySelectorAll("h1, h2, h3, .item-text, .track-click");
-
-if (clickableElements && clickableElements.length > 0) {
-  clickableElements.forEach(function (element) {
-    element.addEventListener("click", function (e) {
-      const clickedText = this.innerText ? this.innerText.trim() : "";
-      const tagType = this.tagName;
-
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        'event': 'heading_click',
-        'heading_text': clickedText,
-        'heading_type': tagType
-      });
-
-      console.log("Custom event pushed:", clickedText);
-    });
-  });
