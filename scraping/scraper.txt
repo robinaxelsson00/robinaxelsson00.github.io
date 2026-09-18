@@ -1,0 +1,118 @@
+import fs from 'node:fs/promises';
+import * as cheerio from 'cheerio';
+
+// Hjälpfunktion för att pausa exekveringen i millisekunder
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function scrapePage(url, pageNum) {
+  console.log(`[Sida ${pageNum}] Hämtar: ${url}`);
+
+  // Förberett objekt för inställningar till fetch (lätt att utöka med t.ex. proxy-agent senare)
+  const fetchOptions = {
+    method: 'GET',
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      'Accept-Language': 'sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache'
+    },
+    cache: 'no-store' // Säkerställer att ingen lokal HTTP-cache används
+  };
+
+  const response = await fetch(url, fetchOptions);
+
+  if (!response.ok) {
+    throw new Error(`HTTP-fel! Status: ${response.status}`);
+  }
+
+  const html = await response.text();
+  const $ = cheerio.load(html);
+  const pageCompanies = [];
+
+  $('.SearchResultCard-card').each((index, element) => {
+    const card = $(element);
+
+    // 1. Företagsnamn
+    const name = card.find('h2').text().trim();
+
+    // 2. Organisationsnummer
+    let orgNr = '';
+    const orgElem = card.find('.CardHeader-propertyList:contains("Org.nr")');
+    if (orgElem.length) {
+      orgNr = orgElem.text().replace('Org.nr', '').trim();
+    }
+
+    // 3. Telefonnummer
+    let phone = '';
+    const phoneElem = card.find('.CardHeader-phone');
+    if (phoneElem.length) {
+      phone = phoneElem.text().replace('Telefon', '').trim();
+    }
+
+    // 4. Adress
+    let address = '';
+    const locationIcon = card.find('.fa-location-dot');
+    if (locationIcon.length) {
+      address = locationIcon.parent().text().trim();
+    }
+
+    if (name) {
+      pageCompanies.push({ name, orgNr, phone, address });
+    }
+  });
+
+  return pageCompanies;
+}
+
+async function scrapeAll() {
+  const urls = [
+    'https://www.allabolag.se/bransch-s%C3%B6k?q=reklambyråer',
+    'https://www.allabolag.se/bransch-s%C3%B6k?q=reklambyråer&page=2',
+    'https://www.allabolag.se/bransch-s%C3%B6k?q=reklambyråer&page=3',
+    'https://www.allabolag.se/bransch-s%C3%B6k?q=reklambyråer&page=4',
+    'https://www.allabolag.se/bransch-s%C3%B6k?q=reklambyråer&page=5'
+  ];
+
+  const allCompanies = [];
+
+  for (let i = 0; i < urls.length; i++) {
+    const url = urls[i];
+    const pageNum = i + 1;
+
+    try {
+      const companiesFromPage = await scrapePage(url, pageNum);
+      console.log(`[Sida ${pageNum}] Hittade ${companiesFromPage.length} företag.`);
+      allCompanies.push(...companiesFromPage);
+    } catch (error) {
+      console.error(`[Sida ${pageNum}] Fel uppstod: ${error.message}. Hoppar över till nästa sida.`);
+    }
+
+    // Vänta 500 ms mellan sidhämtningar (men inte efter sista sidan)
+    if (i < urls.length - 1) {
+      await delay(500);
+    }
+  }
+
+  if (allCompanies.length === 0) {
+    console.log('\nInga företag kunde hämtas totalt.');
+    return;
+  }
+
+  // Skapa CSV-fil med alla samlade resultat
+  const csvHeader = 'Företagsnamn,Organisationsnummer,Telefonnummer,Adress\n';
+  const csvRows = allCompanies
+    .map(c => {
+      const clean = str => `"${(str || '').replace(/"/g, '""')}"`;
+      return `${clean(c.name)},${clean(c.orgNr)},${clean(c.phone)},${clean(c.address)}`;
+    })
+    .join('\n');
+
+  const csvContent = '\uFEFF' + csvHeader + csvRows;
+
+  await fs.writeFile('foretag.csv', csvContent, 'utf-8');
+
+  console.log(`\nFÄRDIG! Totalt sparades ${allCompanies.length} företag från alla sidor till foretag.csv.`);
+}
+
+scrapeAll();
