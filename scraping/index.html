@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-P3DD4CGV');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraping & Data Extraction — Portfolio</title>
+
+    <!-- Tailwind CSS för snabb, responsiv layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            cursor: none !important;
+        }
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 5mm;
+            height: 10mm;
+            background-color: #ffffff;
+            pointer-events: none;
+            z-index: 99999;
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-[#f5f5f0] text-slate-900 font-sans p-6 pt-20 pb-16 space-y-10 max-w-6xl mx-auto" style="background-color: #f5f5f0;">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3DD4CGV"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Anpassad muspekare -->
+    <div class="custom-cursor"></div>
+
+    <!-- Tillbaka-länk till Portföljen (uppe i vänstra hörnet) -->
+    <header style="position: fixed; top: 0; left: 0; width: 100%; display: flex; align-items: center; padding: 1.5rem 2rem; z-index: 999; mix-blend-mode: difference; pointer-events: none;">
+        <a href="../index.html" style="font-size: 1.1rem; font-weight: 900; letter-spacing: 2px; color: #ffffff; text-decoration: none; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; pointer-events: auto;">PORTFOLIO®</a>
+    </header>
+
+    <!-- Sidhuvud / Projektintro -->
+    <header class="border-b border-slate-300 pb-6">
+        <div class="flex flex-wrap items-center gap-2 mb-3">
+            <span class="bg-slate-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">Web Scraping</span>
+            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-1 rounded-full">Node.js / Cheerio</span>
+            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">Data Extraction</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-[#111111] tracking-tight">Automatiserad Web Scraping & Datautvinning</h1>
+        <p class="text-[#666666] text-base sm:text-lg mt-2 max-w-3xl leading-relaxed">
+            Ett projekt för automatiserad hämtning och strukturering av ostrukturerad webbdata till CSV. Koden använder Node.js och Cheerio för att parsa sökresultat, extrahera bolagsuppgifter och generera rena dataset redo för analys.
+        </p>
+    </header>
+
+    <!-- SEKTION 1: Filöversikt & Nedladdning -->
+    <section class="space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+            <h2 class="text-xl font-bold text-slate-900">1. Projektfiler & Dataset</h2>
+            <span class="text-xs font-medium text-slate-500">Klicka för att ladda ner eller granska</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Filkort: Företagsdata CSV -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-slate-400 transition-colors">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-2xl">📊</span>
+                        <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">CSV DATASET</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 text-lg">foretag.csv</h3>
+                    <p class="text-slate-600 text-xs mt-1 leading-normal">
+                        Strukturerad B2B-data med företagsnamn, organisationsnummer, telefonnummer och adresser.
+                    </p>
+                </div>
+                <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs text-slate-500 font-mono">120+ bolag</span>
+                    <a href="foretag.csv" download class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors">
+                        <span>📥</span> Ladda ner
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filkort: Rubriker CSV -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-slate-400 transition-colors">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-2xl">📋</span>
+                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">CSV LISTA</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 text-lg">rubriker.csv</h3>
+                    <p class="text-slate-600 text-xs mt-1 leading-normal">
+                        Extraherade rubriker och företagsnamn (bl.a. arkitektkontor och byråer) från webbresultat.
+                    </p>
+                </div>
+                <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs text-slate-500 font-mono">30+ rader</span>
+                    <a href="rubriker.csv" download class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors">
+                        <span>📥</span> Ladda ner
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filkort: Scraper Script -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-slate-400 transition-colors">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-2xl">⚡</span>
+                        <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">NODE.JS SKRIPT</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 text-lg">scraper.txt</h3>
+                    <p class="text-slate-600 text-xs mt-1 leading-normal">
+                        Källkoden för crawlern med HTTP-requests, Cheerio-selektorer, rate-limiting och filskrivning.
+                    </p>
+                </div>
+                <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs text-slate-500 font-mono">ES Modules</span>
+                    <a href="scraper.txt" target="_blank" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors">
+                        <span>📄</span> Visa källkod
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEKTION 2: Interaktiv Dataförhandsgranskning -->
+    <section class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+                <h2 class="text-xl font-bold text-slate-900">2. Interaktiv Förhandsgranskning (foretag.csv)</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Sök och filtrera i den insamlade datamängden direkt i webbläsaren</p>
+            </div>
+            <!-- Sökfält -->
+            <div class="relative w-full sm:w-72">
+                <input id="table-search" type="text" placeholder="Sök bolag, stad, telefon..." 
+                    class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3.5 py-2 text-xs font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:bg-white transition-all">
+            </div>
+        </div>
+
+        <!-- Tabell -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
+                        <th class="py-3 px-4">Företagsnamn</th>
+                        <th class="py-3 px-4">Org.nr</th>
+                        <th class="py-3 px-4">Telefon</th>
+                        <th class="py-3 px-4">Adress</th>
+                    </tr>
+                </thead>
+                <tbody id="csv-table-body" class="divide-y divide-slate-100 text-slate-800 font-medium">
+                    <!-- Fylls dynamiskt av JavaScriptet nedan -->
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-slate-400">Läser in data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex items-center justify-between pt-2 text-xs text-slate-500">
+            <span id="row-count">Visar data</span>
+            <a href="foretag.csv" download class="font-bold text-slate-800 hover:underline">Ladda ner hela filen (.csv) &rarr;</a>
+        </div>
+    </section>
+
+    <!-- SEKTION 3: Källkod och arkitektur -->
+    <section class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <h2 class="text-xl font-bold text-slate-900">3. Så fungerar scrapern (Kodarkitektur)</h2>
+        <p class="text-slate-600 text-sm leading-relaxed">
+            Scrapern körs asynkront med Node.js. För varje URL anropas sidan med anpassade HTTP-headers, varpå HTML-trädet läses in i Cheerio för att extrahera exakta CSS-klasser och fält. För att undvika att överbelasta målservern appliceras en inbyggd tidsfördröjning (<code class="bg-slate-100 px-1 py-0.5 rounded text-xs text-rose-600 font-mono">delay()</code>) mellan anropen innan datan konverteras till CSV-format.
+        </p>
+
+        <div class="bg-slate-900 text-slate-200 p-4 rounded-lg overflow-x-auto text-xs font-mono border border-slate-800 leading-relaxed">
+<pre><code>// Exempel: Selektorer och parsing med Cheerio
+const $ = cheerio.load(html);
+
+$('.SearchResultCard-card').each((index, element) => {
+    const card = $(element);
+    const name = card.find('h2').text().trim();
+    const orgNr = card.find('.CardHeader-propertyList:contains("Org.nr")').text().replace('Org.nr', '').trim();
+    const phone = card.find('.CardHeader-phone').text().replace('Telefon', '').trim();
+    const address = card.find('.fa-location-dot').parent().text().trim();
+
+    if (name) {
+        companies.push({ name, orgNr, phone, address });
+    }
+});</code></pre>
+        </div>
+    </section>
+
+    <!-- Skript för dynamisk inläsning och sökning i CSV-tabellen -->
+    <script>
+        (function() {
+            let allRows = [];
+            const tbody = document.getElementById('csv-table-body');
+            const searchInput = document.getElementById('table-search');
+            const countLabel = document.getElementById('row-count');
+
+            function parseCSV(text) {
+                const lines = text.trim().split('\n');
+                if (lines.length < 2) return [];
+                
+                return lines.slice(1).map(line => {
+                    // Hanterar citattecken och kommatecken i CSV
+                    const matches = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+                    return matches.map(cell => cell.replace(/^"|"$/g, '').trim());
+                }).filter(row => row.length > 0 && row[0]);
+            }
+
+            function renderTable(rows) {
+                if (!tbody) return;
+                if (rows.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-400">Inga företag matchade din sökning.</td></tr>';
+                    countLabel.textContent = '0 resultat funna';
+                    return;
+                }
+
+                // Begränsa till max 25 rader vid rendering för bästa prestanda
+                const displayRows = rows.slice(0, 25);
+                tbody.innerHTML = displayRows.map(cols => `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="py-2.5 px-4 font-bold text-slate-900">${cols[0] || '-'}</td>
+                        <td class="py-2.5 px-4 font-mono text-slate-600">${cols[1] || '-'}</td>
+                        <td class="py-2.5 px-4 font-mono text-slate-600">${cols[2] || '-'}</td>
+                        <td class="py-2.5 px-4 text-slate-600">${cols[3] || '-'}</td>
+                    </tr>
+                `).join('');
+
+                countLabel.textContent = `Visar ${displayRows.length} av totalt ${rows.length} företag`;
+            }
+
+            // Hämta foretag.csv dynamiskt
+            fetch('foretag.csv')
+                .then(res => res.text())
+                .then(csvText => {
+                    allRows = parseCSV(csvText);
+                    renderTable(allRows);
+                })
+                .catch(err => {
+                    console.warn('Kunde inte läsa in foretag.csv direkt via fetch:', err);
+                    tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-500">Kunde inte förhandsgranska CSV automatiskt (ladda ner filen ovan för att se all data).</td></tr>';
+                });
+
+            // Sökfiltrering i realtid
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.toLowerCase().trim();
+                    if (!query) {
+                        renderTable(allRows);
+                        return;
+                    }
+                    const filtered = allRows.filter(row => 
+                        row.some(col => (col || '').toLowerCase().includes(query))
+                    );
+                    renderTable(filtered);
+                });
+            }
+        })();
+    </script>
+
+    <!-- Global portfolio muspekarskript -->
+    <script src="../script.js"></script>
+</body>
+</html>
+
