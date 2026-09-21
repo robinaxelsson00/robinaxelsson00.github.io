@@ -38,7 +38,23 @@
             transform: translate(-50%, -50%);
             transition: transform 0.1s ease-out;
         }
+
+        /* Dölj fixerad header och dubbel muspekare om sidan visas inuti en förhandsgransknings-iframe */
+        .in-iframe header[style*="fixed"] {
+            display: none !important;
+        }
+        .in-iframe .custom-cursor {
+            display: none !important;
+        }
+        .in-iframe body {
+            padding-top: 2rem !important;
+        }
     </style>
+    <script>
+        if (window.self !== window.top) {
+            document.documentElement.classList.add('in-iframe');
+        }
+    </script>
 </head>
 <body class="bg-[#f5f5f0] text-slate-900 font-sans p-6 pt-20 pb-24 space-y-12 max-w-4xl mx-auto" style="background-color: #f5f5f0;">
     <!-- Google Tag Manager (noscript) -->

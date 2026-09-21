@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const revealContainer = document.querySelector('.hover-reveal');
     const revealImg = document.querySelector('.hover-reveal-img');
     const revealVideo = document.querySelector('.hover-reveal-video');
+    const revealFrame = document.querySelector('.hover-reveal-frame');
     const revealItems = document.querySelectorAll('.reveal-item');
 
     // 1. Muspekare & Interaktivitet
@@ -23,20 +24,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. Fullskärms Hover Reveal (Bilder & Videor)
+    // 2. Fullskärms Hover Reveal (Bilder, Videor & HTML-sidor)
     if (revealContainer && revealItems.length > 0) {
         revealItems.forEach(item => {
             item.addEventListener('mouseenter', () => {
+                const htmlUrl = item.getAttribute('data-html');
                 const videoUrl = item.getAttribute('data-video');
                 const imgUrl = item.getAttribute('data-image');
 
-                if (videoUrl && revealVideo) {
+                if (htmlUrl && revealFrame) {
+                    if (revealFrame.getAttribute('src') !== htmlUrl) {
+                        revealFrame.src = htmlUrl;
+                    }
+                    revealContainer.classList.remove('has-video');
+                    revealContainer.classList.add('has-html');
+                    revealContainer.classList.add('active');
+                } else if (videoUrl && revealVideo) {
                     revealVideo.src = videoUrl;
-                    revealVideo.play();
+                    revealVideo.play().catch(() => {});
+                    revealContainer.classList.remove('has-html');
                     revealContainer.classList.add('has-video');
                     revealContainer.classList.add('active');
                 } else if (imgUrl && revealImg) {
                     revealImg.src = imgUrl;
+                    revealContainer.classList.remove('has-html');
                     revealContainer.classList.remove('has-video');
                     revealContainer.classList.add('active');
                 }
