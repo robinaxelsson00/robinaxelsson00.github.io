@@ -1,42 +1,433 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-P3DD4CGV');</script>
-<!-- End Google Tag Manager -->
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-P3DD4CGV');</script>
+    <!-- End Google Tag Manager -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photography — Portfolio</title>
-    <link rel="stylesheet" href="../style.css">
+    <title>PHOTOGRAPHY — Robin Axelsson</title>
+
+    <!-- Tailwind CSS för layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #f5f5f0;
+            --text-primary: #111111;
+            --text-secondary: #666666;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Anpassad muspekare */
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 5mm;
+            height: 10mm;
+            background-color: #111111;
+            pointer-events: none;
+            z-index: 99999;
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s ease-out;
+            border-radius: 1px;
+        }
+
+        /* Gallerikort och hover-effekter */
+        .photo-card {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background-color: #e5e5df;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .photo-card:hover img {
+            transform: scale(1.04);
+        }
+
+        .photo-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 1.25rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+            color: #ffffff;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .photo-card:hover .photo-card-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Lightbox Fullskärmsvisare */
+        .lightbox-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(10, 10, 10, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 2rem;
+        }
+
+        .lightbox-modal.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .lightbox-img-wrapper {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lightbox-img-wrapper img {
+            max-width: 100%;
+            max-height: 75vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Förhandsgransknings-iframe döljning */
+        .in-iframe header[style*="fixed"] {
+            display: none !important;
+        }
+        .in-iframe .custom-cursor {
+            display: none !important;
+        }
+    </style>
+    <script>
+        if (window.self !== window.top) {
+            document.documentElement.classList.add('in-iframe');
+        }
+    </script>
 </head>
-<body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3DD4CGV"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+<body class="p-6 sm:p-12 pt-24 pb-28 max-w-6xl mx-auto">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3DD4CGV"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Anpassad muspekare -->
     <div class="custom-cursor"></div>
-    <header class="navbar">
-        <a href="../index.html" class="logo">PORTFOLIO®</a>
-        <nav class="nav-links">
-            <a href="../index.html#about">ABOUT my</a>
-            <a href="../index.html#work">WORK</a>
-            <a href="../index.html#contact">CONTACT me</a>
-        </nav>
+
+    <!-- Tillbaka-länk till Portföljen (uppe i vänstra hörnet) -->
+    <header style="position: fixed; top: 0; left: 0; padding: 1.5rem 2rem; z-index: 99999; mix-blend-mode: difference;">
+        <a href="../index.html" class="track-click" style="font-size: 1.1rem; font-weight: 900; letter-spacing: 2px; color: #ffffff; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; cursor: pointer; display: inline-block;">PORTFOLIO®</a>
     </header>
 
-    <main style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; text-align: center;">
-        <h1 style="font-size: 3rem; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 1rem;">PHOTOGRAPHY</h1>
-        <p style="color: var(--text-secondary); font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase;">Under uppbyggnad</p>
+    <!-- Sidhuvud -->
+    <div class="mb-12 border-b border-slate-300/80 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+            <div class="flex items-center gap-2 mb-3">
+                <span class="bg-slate-900 text-white text-[11px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full">Archive</span>
+                <span class="text-xs font-semibold text-slate-500 font-mono">35mm & Digital</span>
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-[#111111] uppercase">PHOTOGRAPHY</h1>
+            <p class="text-slate-600 mt-2 text-base sm:text-lg max-w-xl font-normal">Visuellt arkiv med foton, porträtt, gatufotografi och redaktionellt bildmaterial.</p>
+        </div>
+
+        <!-- Filter-knappar för kategorier -->
+        <div id="category-filters" class="flex flex-wrap gap-2">
+            <button type="button" data-filter="all" class="filter-btn active bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-full transition-all border border-slate-900 cursor-pointer">Alla</button>
+            <button type="button" data-filter="concert" class="filter-btn bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold px-4 py-2 rounded-full transition-all border border-slate-300 cursor-pointer">Live & Konsert</button>
+            <button type="button" data-filter="interior" class="filter-btn bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold px-4 py-2 rounded-full transition-all border border-slate-300 cursor-pointer">Interiör & Arkitektur</button>
+            <button type="button" data-filter="portrait" class="filter-btn bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold px-4 py-2 rounded-full transition-all border border-slate-300 cursor-pointer">Porträtt & Landskap</button>
+        </div>
+    </div>
+
+    <!-- Fotogalleri (Masonry Grid) -->
+    <main id="gallery-container" class="columns-1 sm:columns-2 lg:columns-3 gap-6">
+        <!-- Bildkort renderas dynamiskt via listan i scriptet nedan -->
     </main>
 
+    <!-- Tomt tillstånd om inga bilder matchar filter -->
+    <div id="no-photos-msg" class="hidden text-center py-20 text-slate-500">
+        <p class="text-lg font-bold">Inga bilder i denna kategori ännu.</p>
+    </div>
+
+    <!-- Fullskärms Lightbox Modal -->
+    <div id="lightbox" class="lightbox-modal" aria-hidden="true">
+        <!-- Stäng-knapp -->
+        <button type="button" id="lightbox-close" class="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xl font-bold transition-all cursor-pointer border border-white/10 z-10" aria-label="Stäng">✕</button>
+        
+        <!-- Föregående / Nästa pilar -->
+        <button type="button" id="lightbox-prev" class="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xl font-bold transition-all cursor-pointer border border-white/10 z-10" aria-label="Föregående bild">◀</button>
+        <button type="button" id="lightbox-next" class="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xl font-bold transition-all cursor-pointer border border-white/10 z-10" aria-label="Nästa bild">▶</button>
+
+        <div class="lightbox-img-wrapper" id="lightbox-content">
+            <img id="lightbox-img" src="" alt="Förstorad bild">
+            <div class="mt-4 text-center">
+                <h3 id="lightbox-title" class="text-white font-bold text-lg"></h3>
+                <p id="lightbox-meta" class="text-slate-400 text-xs font-mono mt-1"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT: ENKEL BILDHANTERING & GALLERIFUNKTIONER -->
+    <script>
+        // =========================================================================
+        // 📸 HÄR LÄGGER DU ENKELT TILL ELLER ÄNDRAR DINA BILDER:
+        // Kopiera bara en rad och klistra in med ny bildsökväg (src), titel och kategori!
+        // Giltiga kategorier: 'concert', 'interior', 'portrait'
+        // =========================================================================
+        const photoGalleryData = [
+            {
+                src: '../images/concert-singer.jpg',
+                title: 'Live Energy',
+                category: 'concert',
+                meta: '2026 — Concert Photography'
+            },
+            {
+                src: '../images/interior-livingroom.jpg',
+                title: 'Mid-Century Living',
+                category: 'interior',
+                meta: '2026 — Interior & Architecture'
+            },
+            {
+                src: '../images/concert-frontman.jpg',
+                title: 'Stage Presence',
+                category: 'concert',
+                meta: '2026 — Live Performance'
+            },
+            {
+                src: '../images/interior-dining.jpg',
+                title: 'Nordic Dining Space',
+                category: 'interior',
+                meta: '2026 — Natural Light Photography'
+            },
+            {
+                src: '../images/concert-drums.jpg',
+                title: 'Drummer',
+                category: 'concert',
+                meta: '2026 — Live Music'
+            },
+            {
+                src: '../images/interior-sideboard.jpg',
+                title: 'Scandinavian Sideboard',
+                category: 'interior',
+                meta: '2026 — Interior Design'
+            },
+            {
+                src: '../images/concert-guitar.jpg',
+                title: 'Guitarist',
+                category: 'concert',
+                meta: '2026 — Stage Lighting'
+            },
+            {
+                src: '../images/interior-book.jpg',
+                title: 'Architectural Details',
+                category: 'interior',
+                meta: '2026 — Still Life & Detail'
+            },
+            {
+                src: '../images/DSC07441.jpg',
+                title: 'Nordic Design & Light',
+                category: 'portrait',
+                meta: '2026 — 35mm Analog'
+            },
+            {
+                src: '../images/portrait.jpg',
+                title: 'Studio Portrait',
+                category: 'portrait',
+                meta: '2025 — Medium Format'
+            },
+            {
+                src: '../images/fotorobin.jpg',
+                title: 'Self in Perspective',
+                category: 'portrait',
+                meta: '2025 — 35mm Film'
+            }
+        ];
+        // =========================================================================
+
+        (function() {
+            const galleryContainer = document.getElementById('gallery-container');
+            const noPhotosMsg = document.getElementById('no-photos-msg');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            // Lightbox element
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxTitle = document.getElementById('lightbox-title');
+            const lightboxMeta = document.getElementById('lightbox-meta');
+            const closeBtn = document.getElementById('lightbox-close');
+            const prevBtn = document.getElementById('lightbox-prev');
+            const nextBtn = document.getElementById('lightbox-next');
+
+            let currentFilter = 'all';
+            let activeVisiblePhotos = [];
+            let currentLightboxIndex = 0;
+
+            // 1. Rendera bildkorten i galleriet
+            function renderGallery(filter = 'all') {
+                currentFilter = filter;
+                activeVisiblePhotos = photoGalleryData.filter(p => filter === 'all' || p.category === filter);
+
+                if (activeVisiblePhotos.length === 0) {
+                    galleryContainer.innerHTML = '';
+                    noPhotosMsg.classList.remove('hidden');
+                    return;
+                }
+
+                noPhotosMsg.classList.add('hidden');
+
+                galleryContainer.innerHTML = activeVisiblePhotos.map((photo, index) => {
+                    return `
+                        <div class="photo-card group" data-index="${index}">
+                            <img src="${photo.src}" alt="${photo.title}" loading="lazy" onerror="this.src='../images/portrait.jpg'">
+                            <div class="photo-card-overlay">
+                                <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-300 font-mono">${photo.meta}</div>
+                                <h3 class="font-bold text-base text-white tracking-tight mt-0.5">${photo.title}</h3>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Klick på bild för att öppna lightbox
+                document.querySelectorAll('.photo-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const idx = parseInt(this.getAttribute('data-index'), 10);
+                        openLightbox(idx);
+                    });
+                });
+            }
+
+            // 2. Lightbox funktioner
+            function openLightbox(index) {
+                if (index < 0 || index >= activeVisiblePhotos.length) return;
+                currentLightboxIndex = index;
+                const photo = activeVisiblePhotos[index];
+
+                lightboxImg.src = photo.src;
+                lightboxTitle.textContent = photo.title;
+                lightboxMeta.textContent = `${photo.meta} (${index + 1} av ${activeVisiblePhotos.length})`;
+
+                lightbox.classList.add('active');
+                lightbox.setAttribute('aria-hidden', 'false');
+
+                // GTM Tracking
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    event: 'photo_view',
+                    photo_title: photo.title,
+                    photo_category: photo.category
+                });
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                lightbox.setAttribute('aria-hidden', 'true');
+            }
+
+            function showNextPhoto() {
+                const nextIdx = (currentLightboxIndex + 1) % activeVisiblePhotos.length;
+                openLightbox(nextIdx);
+            }
+
+            function showPrevPhoto() {
+                const prevIdx = (currentLightboxIndex - 1 + activeVisiblePhotos.length) % activeVisiblePhotos.length;
+                openLightbox(prevIdx);
+            }
+
+            // 3. Filter-knappar
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-slate-900', 'text-white', 'border-slate-900');
+                        b.classList.add('bg-white', 'text-slate-800', 'border-slate-300');
+                    });
+
+                    this.classList.add('active', 'bg-slate-900', 'text-white', 'border-slate-900');
+                    this.classList.remove('bg-white', 'text-slate-800', 'border-slate-300');
+
+                    const filterCategory = this.getAttribute('data-filter');
+                    renderGallery(filterCategory);
+                });
+            });
+
+            // 4. Eventlyssnare för Lightbox
+            closeBtn.addEventListener('click', closeLightbox);
+            prevBtn.addEventListener('click', showPrevPhoto);
+            nextBtn.addEventListener('click', showNextPhoto);
+
+            // Klick utanför bilden stänger
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+
+            // Tangentbordsnavigering (Esc, Pil Vänster, Pil Höger)
+            document.addEventListener('keydown', function(e) {
+                if (!lightbox.classList.contains('active')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') showNextPhoto();
+                if (e.key === 'ArrowLeft') showPrevPhoto();
+            });
+
+            // Starta galleriet
+            renderGallery('all');
+        })();
+    </script>
+
+    <!-- Global portfolio muspekarskript -->
     <script src="../script.js"></script>
 </body>
 </html>
-
