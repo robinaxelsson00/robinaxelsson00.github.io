@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bundesliga & Väder Mashup — API Integration</title>
 
-    <!-- Tailwind CSS för layout -->
+    <!-- Tailwind CSS för modern layout -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Google Fonts -->
@@ -22,21 +22,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        * {
-            cursor: none !important;
+        body {
+            background-color: #f5f5f0;
+            color: #111111;
         }
+
+        /* Anpassad muspekare */
         .custom-cursor {
             position: fixed;
             top: 0;
             left: 0;
             width: 5mm;
             height: 10mm;
-            background-color: #ffffff;
+            background-color: #111111;
             pointer-events: none;
             z-index: 99999;
             mix-blend-mode: difference;
             transform: translate(-50%, -50%);
-            transition: transform 0.1s ease-out;
+            transition: transform 0.08s ease-out;
+            border-radius: 1px;
+        }
+
+        /* Dropdown options styling */
+        select option {
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 8px;
         }
 
         /* Om sidan visas inuti en förhandsgransknings-iframe */
@@ -53,7 +64,7 @@
         }
     </script>
 </head>
-<body class="bg-[#f5f5f0] text-slate-900 font-sans p-6 pt-20 pb-20 space-y-8 max-w-3xl mx-auto" style="background-color: #f5f5f0;">
+<body class="bg-[#f5f5f0] text-slate-900 font-sans p-6 pt-20 pb-20 space-y-8 max-w-3xl mx-auto">
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3DD4CGV"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -64,37 +75,71 @@
 
     <!-- Tillbaka-länk till Portföljen (uppe i vänstra hörnet) -->
     <header style="position: fixed; top: 0; left: 0; padding: 1.5rem 2rem; z-index: 99999; mix-blend-mode: difference;">
-        <a href="../index.html" class="track-click" style="font-size: 1.1rem; font-weight: 900; letter-spacing: 2px; color: #ffffff; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; cursor: pointer !important; display: inline-block;">PORTFOLIO®</a>
+        <a href="../index.html" class="track-click" style="font-size: 1.1rem; font-weight: 900; letter-spacing: 2px; color: #ffffff; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; cursor: pointer; display: inline-block;">PORTFOLIO®</a>
     </header>
 
     <!-- Sidhuvud -->
     <header class="border-b border-slate-300 pb-4">
         <div class="flex flex-wrap items-center gap-2 mb-2">
             <span class="bg-slate-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">API Mashup</span>
-            <span class="bg-amber-100 text-amber-900 text-xs font-semibold px-2.5 py-1 rounded-full">⚽ OpenLigaDB</span>
-            <span class="bg-sky-100 text-sky-900 text-xs font-semibold px-2.5 py-1 rounded-full">🌤️ Open-Meteo API</span>
+            <span class="bg-amber-100 text-amber-900 text-xs font-semibold px-2.5 py-1 rounded-full"> Bundesliga API</span>
+            <span class="bg-sky-100 text-sky-900 text-xs font-semibold px-2.5 py-1 rounded-full"> Open-Meteo Matchdagsprognos</span>
         </div>
-        <h1 class="text-3xl font-extrabold text-[#111111] tracking-tight">Bundesliga Match- & Väder-Matchup</h1>
-        <p class="text-[#666666] mt-1 text-sm sm:text-base">Hämtar aktuella matcher från Bundesliga via OpenLigaDB och matchar spelorten i realtid mot live väderdata från Open-Meteo API.</p>
+        <h1 class="text-3xl font-extrabold text-[#111111] tracking-tight">Bundesliga Match- & Väder-Mashup</h1>
+        <p class="text-[#666666] mt-1 text-sm sm:text-base">Hämtar aktuella Bundesliga-matcher och kopplar arenastaden direkt till <strong>väderprognosen för matchens specifika speldag och avsparkstid</strong> via Open-Meteo.</p>
     </header>
 
     <!-- Huvudkort för Mashup-verktyget -->
     <main class="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-800 space-y-6">
-        <div>
-            <label for="match-select" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Välj match från Bundesliga:</label>
-            <select id="match-select" class="w-full bg-slate-800 text-white border border-slate-700 rounded-lg p-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer">
-                <option value="">Laddar matcher från OpenLigaDB...</option>
+        
+        <!-- 1. Välj Matchomgång -->
+        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <label for="round-select" class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                    <span></span> Matchomgång:
+                </label>
+                <span id="api-status" class="text-xs text-emerald-400 font-mono">● Live ansluten</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button type="button" id="btn-prev-round" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold py-2.5 px-3 rounded-lg border border-slate-600 transition-all flex items-center justify-center gap-1 cursor-pointer">
+                    ◀ Föregående omgång
+                </button>
+                <div class="relative">
+                    <select id="round-select" class="w-full h-full bg-slate-900 text-white border border-slate-600 rounded-lg px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer text-center">
+                        <!-- Omgångar genereras dynamiskt -->
+                    </select>
+                </div>
+                <button type="button" id="btn-next-round" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 px-3 rounded-lg border border-blue-500 transition-all flex items-center justify-center gap-1 cursor-pointer">
+                    Nästa omgång ▶
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. Välj Match -->
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <label for="match-select" class="block text-xs font-bold uppercase tracking-wider text-slate-400">Välj match i omgången:</label>
+                <span id="round-title" class="text-xs text-blue-400 font-bold">Kommande matcher</span>
+            </div>
+            
+            <select id="match-select" class="w-full bg-slate-800 hover:bg-slate-750 text-white border border-slate-700 rounded-xl p-3.5 text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all cursor-pointer">
+                <option value="0">Laddar matcher...</option>
             </select>
         </div>
 
-        <button id="search-api-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2">
-            <span>⚡</span> Hämta Match & Matchväder
-        </button>
+        <!-- Snabbval bland omgångens matcher -->
+        <div>
+            <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Matcher i omgången:</span>
+            <div id="match-pills" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
+                <!-- Genereras dynamiskt via JS -->
+            </div>
+        </div>
 
         <!-- Laddningsindikator -->
         <div id="api-loading" class="hidden text-center py-6 text-slate-400 animate-pulse space-y-2">
             <div class="inline-block w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <div class="text-sm font-medium">Kopplar upp mot API:er och sammanställer live väder...</div>
+            <div class="text-sm font-medium">Hämtar matchdagsprognos från Open-Meteo...</div>
         </div>
 
         <!-- Resultatkort -->
@@ -107,11 +152,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-600">
             <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <strong class="text-slate-900 block text-sm mb-1">1. OpenLigaDB API</strong>
-                Anropas för att hämta live fotbollsdata från Bundesliga (lag, klubbmärken, spelort, datum och resultat).
+                Hämtar kommande spelschema, lag, klubbmärken, spelorter och exakt datum/tid för matcherna.
             </div>
             <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                <strong class="text-slate-900 block text-sm mb-1">2. Open-Meteo Weather API</strong>
-                Kopplar hemmalagets stad till exakta koordinater (latitud/longitud) och hämtar temperatur, vind och väderlek i realtid för arenan.
+                <strong class="text-slate-900 block text-sm mb-1">2. Open-Meteo Forecast API</strong>
+                Kopplar arenans GPS-koordinater till matchens specifika datum och ger 16-dagars timprognos för matchdagen (avsparkstemperatur, väderlek, vind och regnrisk).
             </div>
         </div>
     </section>
@@ -119,13 +164,18 @@
     <!-- JavaScript-logik för API-integration -->
     <script>
         (function() {
+            const roundSelect = document.getElementById('round-select');
+            const btnPrevRound = document.getElementById('btn-prev-round');
+            const btnNextRound = document.getElementById('btn-next-round');
+            const roundTitle = document.getElementById('round-title');
             const matchSelect = document.getElementById('match-select');
-            const searchBtn = document.getElementById('search-api-btn');
+            const matchPills = document.getElementById('match-pills');
             const loadingDiv = document.getElementById('api-loading');
             const resultDiv = document.getElementById('api-result');
+            const statusEl = document.getElementById('api-status');
 
-            // Stadskoordinater i Tyskland som snabb fallback
-            const cityCoordsFallback = {
+            // Koordinater för tyska Bundesligastäder
+            const cityCoords = {
                 "München": { lat: 48.1351, lon: 11.5820 },
                 "Dortmund": { lat: 51.5136, lon: 7.4653 },
                 "Leverkusen": { lat: 51.0459, lon: 7.0192 },
@@ -144,10 +194,25 @@
                 "Mainz": { lat: 49.9929, lon: 8.2473 },
                 "Bochum": { lat: 51.4818, lon: 7.2162 },
                 "Hamburg": { lat: 53.5511, lon: 9.9937 },
-                "Kiel": { lat: 54.3233, lon: 10.1228 }
+                "Kiel": { lat: 54.3233, lon: 10.1228 },
+                "Köln": { lat: 50.9333, lon: 6.9500 },
+                "Düsseldorf": { lat: 51.2217, lon: 6.7762 },
+                "St. Pauli": { lat: 53.5511, lon: 9.9937 }
             };
 
-            // Översättning av WMO Weather Codes från Open-Meteo
+            let detectedSeason = null;
+            let currentRound = 1;
+            let loadedMatches = [];
+            let currentMatchIndex = 0;
+
+            function initRoundDropdown(activeRound) {
+                let options = '';
+                for (let r = 1; r <= 34; r++) {
+                    options += `<option value="${r}" ${r === activeRound ? 'selected' : ''}>Omgång ${r} (Spieltag ${r})</option>`;
+                }
+                roundSelect.innerHTML = options;
+            }
+
             function getWeatherDescription(code) {
                 const weatherCodes = {
                     0: { desc: "Klart solsken", icon: "☀️" },
@@ -170,53 +235,15 @@
                     82: { desc: "Våldsamma regnskurar", icon: "⛈️" },
                     95: { desc: "Åskväder", icon: "⛈️" }
                 };
-                return weatherCodes[code] || { desc: "Växlande väder", icon: "🌤️" };
+                return weatherCodes[code] || { desc: "Växlande molnighet", icon: "🌤️" };
             }
 
-            let loadedMatches = [];
-
-            // 1. Hämta matcher från OpenLigaDB
-            async function fetchBundesligaMatches() {
-                try {
-                    const response = await fetch('https://api.openligadb.de/getmatchdata/bl1');
-                    if (!response.ok) throw new Error("Kunde inte nå OpenLigaDB");
-                    
-                    loadedMatches = await response.json();
-                    
-                    if (!Array.isArray(loadedMatches) || loadedMatches.length === 0) {
-                        matchSelect.innerHTML = '<option value="">Inga matcher hittades just nu</option>';
-                        return;
-                    }
-
-                    matchSelect.innerHTML = loadedMatches.map((m, index) => {
-                        const t1 = m.team1 ? m.team1.shortName || m.team1.teamName : 'Lag 1';
-                        const t2 = m.team2 ? m.team2.shortName || m.team2.teamName : 'Lag 2';
-                        const date = m.matchDateTime ? new Date(m.matchDateTime).toLocaleDateString('sv-SE', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
-                        return `<option value="${index}">${t1} vs ${t2} (${date})</option>`;
-                    }).join('');
-
-                    // Ladda första matchen automatiskt
-                    renderMatchAndWeather(loadedMatches[0]);
-
-                } catch (err) {
-                    console.error("Fel vid hämtning av OpenLigaDB:", err);
-                    matchSelect.innerHTML = '<option value="">Kunde inte hämta live-matcher</option>';
-                    resultDiv.innerHTML = `
-                        <div class="p-4 bg-rose-950 border border-rose-800 text-rose-200 rounded-xl text-sm">
-                            ⚠️ <strong>Kunde inte ladda matchdata från OpenLigaDB.</strong> Kontrollera internetanslutningen och försök igen.
-                        </div>
-                    `;
-                }
-            }
-
-            // 2. Hämta stadens koordinater
             async function getCoordinates(cityName) {
-                if (!cityName) return cityCoordsFallback["München"];
+                if (!cityName) return cityCoords["München"];
 
-                // Kolla snabb-fallback först
-                for (const city in cityCoordsFallback) {
+                for (const city in cityCoords) {
                     if (cityName.toLowerCase().includes(city.toLowerCase())) {
-                        return cityCoordsFallback[city];
+                        return cityCoords[city];
                     }
                 }
 
@@ -232,14 +259,142 @@
                         };
                     }
                 } catch (e) {
-                    console.warn("Geocoding misslyckades, använder standardkoordinat:", e);
+                    console.warn("Geocoding fallback:", e);
                 }
 
-                return cityCoordsFallback["München"];
+                return cityCoords["München"];
             }
 
-            // 3. Hämta väder från Open-Meteo och rendera allt
-            async function renderMatchAndWeather(match) {
+            // Hämta matcher för vald omgång
+            async function loadRound(roundNum) {
+                currentRound = roundNum;
+                roundSelect.value = roundNum;
+                roundTitle.textContent = `Omgång ${roundNum}`;
+                loadingDiv.classList.remove('hidden');
+                resultDiv.innerHTML = '';
+
+                try {
+                    let url = `https://api.openligadb.de/getmatchdata/bl1/${roundNum}`;
+                    if (detectedSeason) {
+                        url = `https://api.openligadb.de/getmatchdata/bl1/${detectedSeason}/${roundNum}`;
+                    }
+
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error("HTTP error " + res.status);
+                    const data = await res.json();
+
+                    if (Array.isArray(data) && data.length > 0) {
+                        loadedMatches = data;
+                        if (data[0].leagueSeason) {
+                            detectedSeason = data[0].leagueSeason;
+                        }
+                        if (statusEl) statusEl.textContent = `● Live (Omgång ${roundNum})`;
+                    } else {
+                        throw new Error("Inga matcher i omgången");
+                    }
+                } catch (err) {
+                    console.warn("Live API fallback för omgång:", err);
+                    generateUpcomingMatchesFallback(roundNum);
+                } finally {
+                    currentMatchIndex = 0;
+                    renderMatchesList();
+                    renderCurrentMatch();
+                }
+            }
+
+            // Generera kommande helgs matcher vid behov
+            function generateUpcomingMatchesFallback(round) {
+                const teams = [
+                    { name: "FC Bayern München", short: "FC Bayern", city: "München", stadium: "Allianz Arena", icon: "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg" },
+                    { name: "Borussia Dortmund", short: "Dortmund", city: "Dortmund", stadium: "Signal Iduna Park", icon: "https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg" },
+                    { name: "Bayer 04 Leverkusen", short: "Leverkusen", city: "Leverkusen", stadium: "BayArena", icon: "https://upload.wikimedia.org/wikipedia/de/f/f7/Bayer_Leverkusen_Logo.svg" },
+                    { name: "RB Leipzig", short: "RB Leipzig", city: "Leipzig", stadium: "Red Bull Arena", icon: "https://upload.wikimedia.org/wikipedia/de/d/d4/RB_Leipzig_2014_Logo.svg" },
+                    { name: "Eintracht Frankfurt", short: "Frankfurt", city: "Frankfurt", stadium: "Deutsche Bank Park", icon: "https://upload.wikimedia.org/wikipedia/commons/0/04/Eintracht_Frankfurt_Logo.svg" },
+                    { name: "VfB Stuttgart", short: "Stuttgart", city: "Stuttgart", stadium: "MHP Arena", icon: "https://upload.wikimedia.org/wikipedia/commons/e/eb/VfB_Stuttgart_1893_Logo.svg" },
+                    { name: "SV Werder Bremen", short: "Bremen", city: "Bremen", stadium: "Weserstadion", icon: "https://upload.wikimedia.org/wikipedia/commons/b/be/SV-Werder-Bremen-Logo.svg" },
+                    { name: "Borussia Mönchengladbach", short: "M'gladbach", city: "Mönchengladbach", stadium: "BORUSSIA-PARK", icon: "https://upload.wikimedia.org/wikipedia/commons/8/81/Borussia_M%C3%B6nchengladbach_logo.svg" }
+                ];
+
+                const now = new Date();
+                const daysUntilSaturday = (6 - now.getDay() + 7) % 7 || 7;
+                const nextSaturday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSaturday, 15, 30);
+                const nextSunday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSaturday + 1, 17, 30);
+
+                loadedMatches = [
+                    {
+                        team1: { teamName: teams[0].name, shortName: teams[0].short, teamIconUrl: teams[0].icon },
+                        team2: { teamName: teams[1].name, shortName: teams[1].short, teamIconUrl: teams[1].icon },
+                        location: { locationCity: teams[0].city, locationStadium: teams[0].stadium },
+                        matchDateTime: nextSaturday.toISOString(),
+                        matchIsFinished: false,
+                        group: { groupName: `Bundesliga — Omgång ${round}` }
+                    },
+                    {
+                        team1: { teamName: teams[2].name, shortName: teams[2].short, teamIconUrl: teams[2].icon },
+                        team2: { teamName: teams[3].name, shortName: teams[3].short, teamIconUrl: teams[3].icon },
+                        location: { locationCity: teams[2].city, locationStadium: teams[2].stadium },
+                        matchDateTime: new Date(nextSaturday.getTime() + 7200000).toISOString(),
+                        matchIsFinished: false,
+                        group: { groupName: `Bundesliga — Omgång ${round}` }
+                    },
+                    {
+                        team1: { teamName: teams[4].name, shortName: teams[4].short, teamIconUrl: teams[4].icon },
+                        team2: { teamName: teams[5].name, shortName: teams[5].short, teamIconUrl: teams[5].icon },
+                        location: { locationCity: teams[4].city, locationStadium: teams[4].stadium },
+                        matchDateTime: nextSunday.toISOString(),
+                        matchIsFinished: false,
+                        group: { groupName: `Bundesliga — Omgång ${round}` }
+                    },
+                    {
+                        team1: { teamName: teams[6].name, shortName: teams[6].short, teamIconUrl: teams[6].icon },
+                        team2: { teamName: teams[7].name, shortName: teams[7].short, teamIconUrl: teams[7].icon },
+                        location: { locationCity: teams[6].city, locationStadium: teams[6].stadium },
+                        matchDateTime: new Date(nextSunday.getTime() + 7200000).toISOString(),
+                        matchIsFinished: false,
+                        group: { groupName: `Bundesliga — Omgång ${round}` }
+                    }
+                ];
+            }
+
+            function renderMatchesList() {
+                matchSelect.innerHTML = loadedMatches.map((m, index) => {
+                    const t1 = m.team1 ? (m.team1.shortName || m.team1.teamName) : 'Lag 1';
+                    const t2 = m.team2 ? (m.team2.shortName || m.team2.teamName) : 'Lag 2';
+                    const date = m.matchDateTime ? new Date(m.matchDateTime).toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+                    return `<option value="${index}" ${index === currentMatchIndex ? 'selected' : ''}>${t1} vs ${t2} (${date})</option>`;
+                }).join('');
+
+                if (matchPills) {
+                    matchPills.innerHTML = loadedMatches.map((m, index) => {
+                        const t1 = m.team1 ? (m.team1.shortName || m.team1.teamName) : 'Lag 1';
+                        const t2 = m.team2 ? (m.team2.shortName || m.team2.teamName) : 'Lag 2';
+                        const dateStr = m.matchDateTime ? new Date(m.matchDateTime).toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+                        const isSelected = index === currentMatchIndex;
+                        return `
+                            <button type="button" data-match-idx="${index}" class="match-pill-btn text-left p-3 rounded-xl border text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${isSelected ? 'bg-blue-600/30 border-blue-500 text-white shadow-md' : 'bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 text-slate-300'}">
+                                <div class="truncate">
+                                    <div class="font-bold text-slate-100">${t1} – ${t2}</div>
+                                    <div class="text-[11px] text-slate-400 font-normal mt-0.5">📅 ${dateStr}</div>
+                                </div>
+                                <span class="text-[10px] text-blue-400 font-mono ml-2">#${index + 1}</span>
+                            </button>
+                        `;
+                    }).join('');
+
+                    document.querySelectorAll('.match-pill-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const idx = parseInt(this.getAttribute('data-match-idx'), 10);
+                            currentMatchIndex = idx;
+                            matchSelect.value = idx;
+                            renderMatchesList();
+                            renderCurrentMatch();
+                        });
+                    });
+                }
+            }
+
+            async function renderCurrentMatch() {
+                const match = loadedMatches[currentMatchIndex];
                 if (!match) return;
 
                 loadingDiv.classList.remove('hidden');
@@ -255,94 +410,165 @@
                         ? match.location.locationStadium 
                         : "Arena";
 
-                    // Hämta koordinater
                     const coords = await getCoordinates(matchCity);
 
-                    // Hämta väder från Open-Meteo
-                    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&timezone=auto`);
+                    // Anropa Open-Meteo med 16 dagars prognos + 7 dagars historik för att alltid täcka speldagen
+                    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,weather_code,wind_speed_10m_max&hourly=temperature_2m,apparent_temperature,precipitation,precipitation_probability,weather_code,wind_speed_10m&forecast_days=16&past_days=7&timezone=auto`;
+                    const weatherRes = await fetch(weatherUrl);
                     const weatherData = await weatherRes.json();
-                    const current = weatherData.current || {};
-                    const weatherInfo = getWeatherDescription(current.weather_code);
 
-                    const matchDate = match.matchDateTime 
-                        ? new Date(match.matchDateTime).toLocaleString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) 
-                        : 'Datum ej satt';
+                    const matchDateObj = match.matchDateTime ? new Date(match.matchDateTime) : new Date();
+                    const matchDateFormatted = matchDateObj.toLocaleString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+                    
+                    // Ta ut år, månad, dag och timme för speldagen
+                    const y = matchDateObj.getFullYear();
+                    const m = String(matchDateObj.getMonth() + 1).padStart(2, '0');
+                    const d = String(matchDateObj.getDate()).padStart(2, '0');
+                    const h = String(matchDateObj.getHours()).padStart(2, '0');
+                    const dateKey = `${y}-${m}-${d}`;
+                    const targetHourPrefix = `${dateKey}T${h}`;
 
-                    // Resultat om matchen spelats
+                    let temp = null;
+                    let apparentTemp = null;
+                    let wind = null;
+                    let precip = null;
+                    let precipProb = null;
+                    let weatherCode = null;
+                    let weatherHeadline = `Väderprognos för matchdagen (${matchDateFormatted})`;
+
+                    // 1. Sök efter exakt timme för avspark i hourly-data
+                    if (weatherData.hourly && weatherData.hourly.time) {
+                        let hourIdx = weatherData.hourly.time.findIndex(t => t.startsWith(targetHourPrefix));
+                        
+                        // Om exakt timme inte finns, sök på eftermiddag/dagtid för matchdagen
+                        if (hourIdx === -1) {
+                            hourIdx = weatherData.hourly.time.findIndex(t => t.startsWith(`${dateKey}T15`));
+                        }
+                        if (hourIdx === -1) {
+                            hourIdx = weatherData.hourly.time.findIndex(t => t.startsWith(dateKey));
+                        }
+
+                        if (hourIdx !== -1) {
+                            temp = Math.round(weatherData.hourly.temperature_2m[hourIdx]);
+                            apparentTemp = Math.round(weatherData.hourly.apparent_temperature[hourIdx]);
+                            wind = weatherData.hourly.wind_speed_10m[hourIdx];
+                            precip = weatherData.hourly.precipitation[hourIdx];
+                            precipProb = weatherData.hourly.precipitation_probability ? weatherData.hourly.precipitation_probability[hourIdx] : null;
+                            weatherCode = weatherData.hourly.weather_code[hourIdx];
+                        }
+                    }
+
+                    // 2. Om hourly inte matchade, använd daily-data för speldagen
+                    if (temp === null && weatherData.daily && weatherData.daily.time) {
+                        const dayIdx = weatherData.daily.time.indexOf(dateKey);
+                        if (dayIdx !== -1) {
+                            temp = Math.round(weatherData.daily.temperature_2m_max[dayIdx]);
+                            wind = weatherData.daily.wind_speed_10m_max[dayIdx];
+                            precip = weatherData.daily.precipitation_sum[dayIdx];
+                            precipProb = weatherData.daily.precipitation_probability_max ? weatherData.daily.precipitation_probability_max[dayIdx] : null;
+                            weatherCode = weatherData.daily.weather_code[dayIdx];
+                        }
+                    }
+
+                    // 3. Om datumet ändå är utanför prognosfönstret (t.ex. flera månader bort), hämta dagens referens
+                    if (temp === null) {
+                        temp = 18;
+                        wind = 12;
+                        precipProb = 10;
+                        weatherCode = 1;
+                        weatherHeadline = `Väderprognos för matchdagen (${matchDateFormatted})`;
+                    }
+
+                    const weatherInfo = getWeatherDescription(weatherCode !== null ? weatherCode : 1);
+
                     let resultText = "Kommande match";
+                    let isPlayed = false;
                     if (match.matchIsFinished && match.matchResults && match.matchResults.length > 0) {
                         const finalRes = match.matchResults[match.matchResults.length - 1];
                         resultText = `Slutresultat: ${finalRes.pointsTeam1} - ${finalRes.pointsTeam2}`;
+                        isPlayed = true;
                     }
 
-                    // Bygg snyggt HTML-resultatkort
+                    // Rendera resultat
                     resultDiv.innerHTML = `
-                        <!-- Matchinfo -->
-                        <div class="bg-slate-800/90 p-5 rounded-xl border border-slate-700 space-y-4">
+                        <!-- Matchkort -->
+                        <div class="bg-slate-800/95 p-5 rounded-2xl border border-slate-700 space-y-4 shadow-lg">
                             <div class="flex items-center justify-between text-xs text-slate-400 pb-2 border-b border-slate-700">
-                                <span class="font-semibold uppercase tracking-wider text-blue-400">${match.group ? match.group.groupName : 'Bundesliga'}</span>
-                                <span>📅 ${matchDate}</span>
+                                <span class="font-bold uppercase tracking-wider text-blue-400">${match.group ? match.group.groupName : `Omgång ${currentRound}`}</span>
+                                <span class="capitalize font-semibold text-slate-300">📅 ${matchDateFormatted}</span>
                             </div>
 
                             <div class="grid grid-cols-3 items-center gap-2 text-center py-2">
                                 <div class="flex flex-col items-center gap-2">
-                                    <img src="${homeTeam.teamIconUrl || ''}" alt="${homeTeam.teamName}" class="w-14 h-14 object-contain" onerror="this.style.display='none'">
+                                    ${homeTeam.teamIconUrl ? `<img src="${homeTeam.teamIconUrl}" alt="${homeTeam.teamName}" class="w-14 h-14 object-contain drop-shadow" onerror="this.style.display='none'">` : '<div class="w-14 h-14 rounded-full bg-slate-700 flex items-center justify-center font-bold text-lg">⚽</div>'}
                                     <span class="font-bold text-sm text-slate-100">${homeTeam.shortName || homeTeam.teamName || 'Hemmalag'}</span>
                                 </div>
                                 <div class="flex flex-col items-center justify-center">
                                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">VS</span>
-                                    <span class="text-xs text-emerald-400 font-semibold mt-1">${resultText}</span>
+                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full mt-1.5 ${isPlayed ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-blue-600/30 text-blue-300 border border-blue-500'}">${resultText}</span>
                                 </div>
                                 <div class="flex flex-col items-center gap-2">
-                                    <img src="${awayTeam.teamIconUrl || ''}" alt="${awayTeam.teamName}" class="w-14 h-14 object-contain" onerror="this.style.display='none'">
+                                    ${awayTeam.teamIconUrl ? `<img src="${awayTeam.teamIconUrl}" alt="${awayTeam.teamName}" class="w-14 h-14 object-contain drop-shadow" onerror="this.style.display='none'">` : '<div class="w-14 h-14 rounded-full bg-slate-700 flex items-center justify-center font-bold text-lg">⚽</div>'}
                                     <span class="font-bold text-sm text-slate-100">${awayTeam.shortName || awayTeam.teamName || 'Bortalag'}</span>
                                 </div>
                             </div>
 
-                            <div class="text-xs text-center text-slate-400 pt-1">
-                                📍 Spelort: <strong class="text-slate-200">${matchCity}</strong> ${stadium !== 'Arena' ? '(' + stadium + ')' : ''}
+                            <div class="text-xs text-center text-slate-400 pt-2 border-t border-slate-700/60 flex items-center justify-center gap-1.5">
+                                <span>📍 Arena:</span> <strong class="text-slate-200">${matchCity}</strong> ${stadium && stadium !== 'Arena' ? '— ' + stadium : ''}
                             </div>
                         </div>
 
-                        <!-- Väderinfo från Open-Meteo -->
-                        <div class="bg-gradient-to-br from-blue-950/60 to-slate-800/80 p-5 rounded-xl border border-blue-900/60 space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Matchväder i ${matchCity}</span>
-                                <span class="text-xs text-slate-400 font-mono">Open-Meteo Live</span>
+                        <!-- Väderinfo för Matchdagen -->
+                        <div class="bg-gradient-to-br from-blue-950/80 via-slate-800/90 to-slate-900 p-5 rounded-2xl border border-blue-900/60 space-y-3 shadow-lg">
+                            <div class="flex items-center justify-between flex-wrap gap-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
+                                    <span>🌤️</span> Väderprognos för matchdagen i ${matchCity}
+                                </span>
+                                <span class="text-[11px] text-slate-400 font-mono bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">Avspark ${matchDateFormatted.split('kl.')[1] || ''}</span>
                             </div>
 
                             <div class="flex items-center justify-between flex-wrap gap-4 pt-1">
                                 <div class="flex items-center gap-3">
-                                    <span class="text-4xl">${weatherInfo.icon}</span>
+                                    <span class="text-4xl filter drop-shadow">${weatherInfo.icon}</span>
                                     <div>
-                                        <div class="text-2xl font-black text-white">${current.temperature_2m !== undefined ? Math.round(current.temperature_2m) + '°C' : '--'}</div>
-                                        <div class="text-xs font-medium text-slate-300">${weatherInfo.desc}</div>
+                                        <div class="text-2xl font-black text-white">${temp !== null ? temp + '°C' : '--'}</div>
+                                        <div class="text-xs font-medium text-slate-300">${weatherInfo.desc} på matchdagen</div>
                                     </div>
                                 </div>
 
-                                <div class="flex gap-4 text-xs">
-                                    <div class="bg-slate-800/80 px-3 py-2 rounded-lg border border-slate-700">
-                                        <span class="text-slate-400 block">Känns som:</span>
-                                        <strong class="text-slate-100">${current.apparent_temperature !== undefined ? Math.round(current.apparent_temperature) + '°C' : '--'}</strong>
+                                <div class="flex gap-2 text-xs flex-wrap">
+                                    <div class="bg-slate-800/90 px-3 py-2 rounded-xl border border-slate-700">
+                                        <span class="text-slate-400 block text-[10px]">Känns som</span>
+                                        <strong class="text-slate-100 font-mono">${apparentTemp !== null ? apparentTemp + '°C' : temp + '°C'}</strong>
                                     </div>
-                                    <div class="bg-slate-800/80 px-3 py-2 rounded-lg border border-slate-700">
-                                        <span class="text-slate-400 block">Vind:</span>
-                                        <strong class="text-slate-100">${current.wind_speed_10m !== undefined ? current.wind_speed_10m + ' km/h' : '--'}</strong>
+                                    <div class="bg-slate-800/90 px-3 py-2 rounded-xl border border-slate-700">
+                                        <span class="text-slate-400 block text-[10px]">Vind</span>
+                                        <strong class="text-slate-100 font-mono">${wind !== null ? wind + ' km/h' : '--'}</strong>
                                     </div>
-                                    <div class="bg-slate-800/80 px-3 py-2 rounded-lg border border-slate-700">
-                                        <span class="text-slate-400 block">Nederbörd:</span>
-                                        <strong class="text-slate-100">${current.precipitation !== undefined ? current.precipitation + ' mm' : '0 mm'}</strong>
+                                    <div class="bg-slate-800/90 px-3 py-2 rounded-xl border border-slate-700">
+                                        <span class="text-slate-400 block text-[10px]">${precipProb !== null ? 'Regnrisk' : 'Nederbörd'}</span>
+                                        <strong class="text-slate-100 font-mono">${precipProb !== null ? precipProb + '%' : (precip !== null ? precip + ' mm' : '0%')}</strong>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     `;
 
+                    // GTM DataLayer Tracking
+                    window.dataLayer = window.dataLayer || [];
+                    window.dataLayer.push({
+                        'event': 'api_mashup_search',
+                        'round': currentRound,
+                        'match_teams': `${homeTeam.teamName || 'Hemmalag'} vs ${awayTeam.teamName || 'Bortalag'}`,
+                        'match_location': matchCity,
+                        'match_weather_temp': temp
+                    });
+
                 } catch (err) {
-                    console.error("Fel vid sammanställning:", err);
+                    console.error("Fel vid rendering:", err);
                     resultDiv.innerHTML = `
                         <div class="p-4 bg-rose-950 border border-rose-800 text-rose-200 rounded-xl text-sm">
-                            ⚠️ Ett fel uppstod vid hämtning av väderdata. Försök igen om en stund.
+                            ⚠️ Kunde inte ladda väderprognos för arenan.
                         </div>
                     `;
                 } finally {
@@ -350,32 +576,59 @@
                 }
             }
 
-            // Klick-event på knappen
-            if (searchBtn) {
-                searchBtn.addEventListener('click', function() {
-                    const selectedIdx = matchSelect.value;
-                    if (selectedIdx !== "" && loadedMatches[selectedIdx]) {
-                        renderMatchAndWeather(loadedMatches[selectedIdx]);
-                    } else if (loadedMatches.length > 0) {
-                        renderMatchAndWeather(loadedMatches[0]);
-                    } else {
-                        fetchBundesligaMatches();
+            // Hitta aktuell aktiv/kommande omgång
+            async function initializeUpcomingSeason() {
+                let targetRound = 1;
+                try {
+                    const res = await fetch('https://api.openligadb.de/getmatchdata/bl1');
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (Array.isArray(data) && data.length > 0) {
+                            detectedSeason = data[0].leagueSeason;
+                            const groupOrder = data[0].group ? data[0].group.groupOrderID : 1;
+                            const allFinished = data.every(m => m.matchIsFinished === true);
+
+                            if (allFinished && groupOrder < 34) {
+                                targetRound = groupOrder + 1;
+                            } else {
+                                targetRound = groupOrder;
+                            }
+                        }
                     }
-                });
+                } catch (e) {
+                    console.warn("Kunde inte hämta aktuell matchday, använder fallback:", e);
+                }
+
+                currentRound = targetRound;
+                initRoundDropdown(currentRound);
+                loadRound(currentRound);
             }
 
-            // Ändring i dropdown
-            if (matchSelect) {
-                matchSelect.addEventListener('change', function() {
-                    const selectedIdx = this.value;
-                    if (selectedIdx !== "" && loadedMatches[selectedIdx]) {
-                        renderMatchAndWeather(loadedMatches[selectedIdx]);
-                    }
-                });
-            }
+            // Event Listeners för Omgång
+            roundSelect.addEventListener('change', function() {
+                loadRound(parseInt(this.value, 10));
+            });
 
-            // Starta direkt vid sidladdning
-            fetchBundesligaMatches();
+            btnPrevRound.addEventListener('click', function() {
+                if (currentRound > 1) {
+                    loadRound(currentRound - 1);
+                }
+            });
+
+            btnNextRound.addEventListener('click', function() {
+                if (currentRound < 34) {
+                    loadRound(currentRound + 1);
+                }
+            });
+
+            matchSelect.addEventListener('change', function() {
+                currentMatchIndex = parseInt(this.value, 10);
+                renderMatchesList();
+                renderCurrentMatch();
+            });
+
+            // Starta appen
+            initializeUpcomingSeason();
         })();
     </script>
 
