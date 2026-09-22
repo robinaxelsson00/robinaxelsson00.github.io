@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-P3DD4CGV');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bravida Case — Robin Axelsson</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --bg-color: #f5f5f0;
+            --text-primary: #111111;
+            --text-secondary: #666666;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Anpassad muspekare */
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 5mm;
+            height: 10mm;
+            background-color: #111111;
+            pointer-events: none;
+            z-index: 99999;
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s ease-out;
+            border-radius: 1px;
+        }
+
+        /* Iframe preview support */
+        .in-iframe header[style*="fixed"] {
+            display: none !important;
+        }
+        .in-iframe .custom-cursor {
+            display: none !important;
+        }
+    </style>
+    <script>
+        if (window.self !== window.top) {
+            document.documentElement.classList.add('in-iframe');
+        }
+    </script>
+</head>
+<body class="text-center select-none">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3DD4CGV"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Anpassad muspekare -->
+    <div class="custom-cursor"></div>
+
+    <!-- Tillbaka-länk till Portföljen (uppe i vänstra hörnet) -->
+    <header style="position: fixed; top: 0; left: 0; padding: 1.5rem 2rem; z-index: 99999; mix-blend-mode: difference;">
+        <a href="../index.html" class="track-click" style="font-size: 1.1rem; font-weight: 900; letter-spacing: 2px; color: #ffffff; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; cursor: pointer; display: inline-block;">PORTFOLIO®</a>
+    </header>
+
+    <!-- Huvudinnehåll Coming Soon -->
+    <main class="max-w-xl mx-auto space-y-6 animate-fade-in">
+        <!-- Tag / Kategori -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 text-white text-xs font-bold uppercase tracking-widest">
+            <span>⚡</span>
+            <span>2026 • Case Study</span>
+        </div>
+
+        <!-- Huvudrubrik -->
+        <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-[#111111] uppercase">
+            BRAVIDA CASE
+        </h1>
+
+        <!-- Status / Coming Soon -->
+        <div class="space-y-3">
+            <p class="text-sm sm:text-base font-mono font-bold uppercase tracking-widest text-slate-500">
+                — Coming Soon • Under uppbyggnad —
+            </p>
+            <p class="text-slate-600 text-sm sm:text-base leading-relaxed max-w-md mx-auto">
+                Strategiskt case och tillväxtanalys för Bravida med fokus på digital räckvidd, marknadspositionering och optimering.
+            </p>
+        </div>
+
+        <!-- Tillbaka-knapp -->
+        <div class="pt-6">
+            <a href="../index.html#work" class="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-slate-900 border border-slate-300 font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-full transition-all shadow-sm cursor-pointer">
+                <span>←</span> Tillbaka till projekt
+            </a>
+        </div>
+    </main>
+
+    <script src="../script.js"></script>
+</body>
+</html>
+
