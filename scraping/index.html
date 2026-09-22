@@ -241,13 +241,37 @@
                     <!-- Fylls dynamiskt av JavaScriptet nedan -->
                 </tbody>
             </table>
-        </div>
+        <!-- Paginering & Sidkontroller -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-100 text-xs text-slate-600">
+            <div class="flex items-center flex-wrap gap-3">
+                <span id="row-count" class="font-bold text-slate-800">Laddar data...</span>
+                <div class="flex items-center gap-1.5 text-[11px] text-slate-500">
+                    <span>Visa per sida:</span>
+                    <select id="page-size-select" class="bg-slate-50 border border-slate-300 rounded-md px-2 py-1 font-bold text-slate-800 cursor-pointer focus:ring-1 focus:ring-slate-400 focus:outline-none">
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="all">Alla</option>
+                    </select>
+                </div>
+            </div>
 
-        <div class="flex items-center justify-between pt-2 text-xs text-slate-500">
-            <span id="row-count">Laddar data...</span>
-            <button type="button" id="btn-dl-active" class="font-bold text-slate-800 hover:underline cursor-pointer">
-                Ladda ner aktiv fil (.csv) &rarr;
-            </button>
+            <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1" id="pagination-controls">
+                    <button type="button" id="btn-prev-page" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 font-bold text-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer">
+                        ◀ Föregående
+                    </button>
+                    <div id="page-numbers" class="flex items-center gap-1">
+                        <!-- Sifferknappar genereras dynamiskt -->
+                    </div>
+                    <button type="button" id="btn-next-page" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 font-bold text-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer">
+                        Nästa ▶
+                    </button>
+                </div>
+                <button type="button" id="btn-dl-active" class="ml-2 font-bold text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors cursor-pointer whitespace-nowrap">
+                    📥 Ladda ner CSV
+                </button>
+            </div>
         </div>
     </section>
 
@@ -401,11 +425,18 @@ main();`;
             let activeDataset = 'foretag';
             let foretagRows = [];
             let currentRows = [];
+            let filteredRows = [];
+            let currentPage = 1;
+            let pageSize = 20;
 
             const tbody = document.getElementById('csv-table-body');
             const thead = document.getElementById('table-head');
             const searchInput = document.getElementById('table-search');
             const countLabel = document.getElementById('row-count');
+            const pageSizeSelect = document.getElementById('page-size-select');
+            const btnPrevPage = document.getElementById('btn-prev-page');
+            const btnNextPage = document.getElementById('btn-next-page');
+            const pageNumbersContainer = document.getElementById('page-numbers');
             const tabForetag = document.getElementById('tab-foretag');
             const tabRubriker = document.getElementById('tab-rubriker');
             const btnDlActive = document.getElementById('btn-dl-active');
@@ -430,7 +461,59 @@ main();`;
                 }).filter(row => row.length > 0 && row[0]);
             }
 
-            function renderTable(rows) {
+            function updatePaginationControls() {
+                const total = filteredRows.length;
+                const totalPages = pageSize === 'all' ? 1 : Math.ceil(total / pageSize) || 1;
+                
+                if (currentPage > totalPages) currentPage = totalPages;
+                if (currentPage < 1) currentPage = 1;
+
+                if (total === 0) {
+                    countLabel.textContent = '0 resultat funna';
+                } else if (pageSize === 'all') {
+                    countLabel.textContent = `Visar alla ${total} rader (${activeDataset}.csv)`;
+                } else {
+                    const start = (currentPage - 1) * pageSize + 1;
+                    const end = Math.min(currentPage * pageSize, total);
+                    countLabel.textContent = `Visar ${start}–${end} av totalt ${total} rader (Sida ${currentPage} av ${totalPages})`;
+                }
+
+                if (btnPrevPage) btnPrevPage.disabled = (currentPage <= 1);
+                if (btnNextPage) btnNextPage.disabled = (currentPage >= totalPages);
+
+                if (pageNumbersContainer) {
+                    if (pageSize === 'all' || totalPages <= 1) {
+                        pageNumbersContainer.innerHTML = '';
+                    } else {
+                        let pagesHtml = '';
+                        const maxButtons = 5;
+                        let startP = Math.max(1, currentPage - 2);
+                        let endP = Math.min(totalPages, startP + maxButtons - 1);
+                        if (endP - startP < maxButtons - 1) {
+                            startP = Math.max(1, endP - maxButtons + 1);
+                        }
+
+                        for (let p = startP; p <= endP; p++) {
+                            const isCurrent = p === currentPage;
+                            pagesHtml += `
+                                <button type="button" data-page="${p}" class="page-num-btn px-2.5 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${isCurrent ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}">
+                                    ${p}
+                                </button>
+                            `;
+                        }
+                        pageNumbersContainer.innerHTML = pagesHtml;
+
+                        pageNumbersContainer.querySelectorAll('.page-num-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                currentPage = parseInt(this.getAttribute('data-page'), 10);
+                                renderTable();
+                            });
+                        });
+                    }
+                }
+            }
+
+            function renderTable() {
                 if (!tbody) return;
 
                 if (activeDataset === 'foretag') {
@@ -451,13 +534,21 @@ main();`;
                     `;
                 }
 
-                if (rows.length === 0) {
+                if (filteredRows.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-slate-400">Inga rader matchade sökningen.</td></tr>';
-                    countLabel.textContent = '0 resultat funna';
+                    updatePaginationControls();
                     return;
                 }
 
-                const displayRows = rows.slice(0, 30);
+                // Beräkna sidans rader
+                let displayRows;
+                if (pageSize === 'all') {
+                    displayRows = filteredRows;
+                } else {
+                    const start = (currentPage - 1) * pageSize;
+                    displayRows = filteredRows.slice(start, start + pageSize);
+                }
+
                 if (activeDataset === 'foretag') {
                     tbody.innerHTML = displayRows.map(cols => `
                         <tr class="hover:bg-slate-50 transition-colors">
@@ -476,7 +567,7 @@ main();`;
                     `).join('');
                 }
 
-                countLabel.textContent = `Visar ${displayRows.length} av totalt ${rows.length} rader (${activeDataset}.csv)`;
+                updatePaginationControls();
             }
 
             // Hämta foretag.csv eller använd inbäddat
@@ -485,10 +576,11 @@ main();`;
                 .then(csvText => {
                     foretagRows = parseCSV(csvText);
                     currentRows = foretagRows;
-                    renderTable(currentRows);
+                    filteredRows = currentRows;
+                    currentPage = 1;
+                    renderTable();
                 })
                 .catch(() => {
-                    // Fallback om lokal fetch begränsas
                     foretagRows = [
                         ["Smart Media Lab Sverige AB", "559204-8069", "-", "Stockholm"],
                         ["Comotion AB", "556679-2288", "0431-41 03 61", "Ängelholm"],
@@ -498,7 +590,9 @@ main();`;
                         ["Spotlight Communications AB", "556650-9880", "08-586 104 00", "Stockholm"]
                     ];
                     currentRows = foretagRows;
-                    renderTable(currentRows);
+                    filteredRows = currentRows;
+                    currentPage = 1;
+                    renderTable();
                 });
 
             // Flikväxling
@@ -507,8 +601,10 @@ main();`;
                 tabForetag.className = 'px-3 py-1 rounded-md bg-white text-slate-900 shadow-sm cursor-pointer';
                 tabRubriker.className = 'px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 cursor-pointer';
                 currentRows = foretagRows;
+                filteredRows = currentRows;
+                currentPage = 1;
                 if (searchInput) searchInput.value = '';
-                renderTable(currentRows);
+                renderTable();
             });
 
             tabRubriker.addEventListener('click', () => {
@@ -516,8 +612,10 @@ main();`;
                 tabRubriker.className = 'px-3 py-1 rounded-md bg-white text-slate-900 shadow-sm cursor-pointer';
                 tabForetag.className = 'px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 cursor-pointer';
                 currentRows = rubrikerRows;
+                filteredRows = currentRows;
+                currentPage = 1;
                 if (searchInput) searchInput.value = '';
-                renderTable(currentRows);
+                renderTable();
             });
 
             // Sökning
@@ -525,11 +623,41 @@ main();`;
                 searchInput.addEventListener('input', function() {
                     const q = this.value.toLowerCase().trim();
                     if (!q) {
-                        renderTable(currentRows);
-                        return;
+                        filteredRows = currentRows;
+                    } else {
+                        filteredRows = currentRows.filter(r => r.some(cell => (cell || '').toLowerCase().includes(q)));
                     }
-                    const filtered = currentRows.filter(r => r.some(cell => (cell || '').toLowerCase().includes(q)));
-                    renderTable(filtered);
+                    currentPage = 1;
+                    renderTable();
+                });
+            }
+
+            // Sidkontroller
+            if (pageSizeSelect) {
+                pageSizeSelect.addEventListener('change', function() {
+                    const val = this.value;
+                    pageSize = val === 'all' ? 'all' : parseInt(val, 10);
+                    currentPage = 1;
+                    renderTable();
+                });
+            }
+
+            if (btnPrevPage) {
+                btnPrevPage.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderTable();
+                    }
+                });
+            }
+
+            if (btnNextPage) {
+                btnNextPage.addEventListener('click', () => {
+                    const totalPages = pageSize === 'all' ? 1 : Math.ceil(filteredRows.length / pageSize);
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderTable();
+                    }
                 });
             }
 
