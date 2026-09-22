@@ -82,11 +82,11 @@
     <header class="border-b border-slate-300 pb-4">
         <div class="flex flex-wrap items-center gap-2 mb-2">
             <span class="bg-slate-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">API Mashup</span>
-            <span class="bg-amber-100 text-amber-900 text-xs font-semibold px-2.5 py-1 rounded-full"> Bundesliga API</span>
-            <span class="bg-sky-100 text-sky-900 text-xs font-semibold px-2.5 py-1 rounded-full"> Open-Meteo Matchdagsprognos</span>
+            <span class="bg-amber-100 text-amber-900 text-xs font-semibold px-2.5 py-1 rounded-full">⚽ Bundesliga API</span>
+            <span class="bg-sky-100 text-sky-900 text-xs font-semibold px-2.5 py-1 rounded-full">🌤️ Open-Meteo Arenaprognos</span>
         </div>
-        <h1 class="text-3xl font-extrabold text-[#111111] tracking-tight">Bundesliga Match- & Väder-Mashup</h1>
-        <p class="text-[#666666] mt-1 text-sm sm:text-base">Hämtar aktuella Bundesliga-matcher och kopplar arenastaden direkt till <strong>väderprognosen för matchens specifika speldag och avsparkstid</strong> via Open-Meteo.</p>
+        <h1 class="text-3xl font-extrabold text-[#111111] tracking-tight">Bundesliga Match- & Arenaväder</h1>
+        <p class="text-[#666666] mt-1 text-sm sm:text-base">Realtidskoppling mellan Bundesliga-matcher och <strong>live väderdata för varje specifik arena och spelstad</strong> via Open-Meteo API.</p>
     </header>
 
     <!-- Huvudkort för Mashup-verktyget -->
@@ -96,7 +96,7 @@
         <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-3">
             <div class="flex items-center justify-between flex-wrap gap-2">
                 <label for="round-select" class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                    <span></span> Matchomgång:
+                    <span>📅</span> Matchomgång:
                 </label>
                 <span id="api-status" class="text-xs text-emerald-400 font-mono">● Live ansluten</span>
             </div>
@@ -139,7 +139,7 @@
         <!-- Laddningsindikator -->
         <div id="api-loading" class="hidden text-center py-6 text-slate-400 animate-pulse space-y-2">
             <div class="inline-block w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <div class="text-sm font-medium">Hämtar matchdagsprognos från Open-Meteo...</div>
+            <div class="text-sm font-medium">Hämtar väderprognos för spelarenan från Open-Meteo...</div>
         </div>
 
         <!-- Resultatkort -->
@@ -152,11 +152,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-600">
             <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <strong class="text-slate-900 block text-sm mb-1">1. OpenLigaDB API</strong>
-                Hämtar kommande spelschema, lag, klubbmärken, spelorter och exakt datum/tid för matcherna.
+                Hämtar pågående säsongs spelschema, lag, klubbmärken och fastställd hemmaarena för varje match.
             </div>
             <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <strong class="text-slate-900 block text-sm mb-1">2. Open-Meteo Forecast API</strong>
-                Kopplar arenans GPS-koordinater till matchens specifika datum och ger 16-dagars timprognos för matchdagen (avsparkstemperatur, väderlek, vind och regnrisk).
+                Kopplar hemmalagets specifika arena-GPS till Open-Meteo API och hämtar lokal väderprognos i realtid för den staden.
             </div>
         </div>
     </section>
@@ -174,30 +174,36 @@
             const resultDiv = document.getElementById('api-result');
             const statusEl = document.getElementById('api-status');
 
-            // Koordinater för tyska Bundesligastäder
-            const cityCoords = {
-                "München": { lat: 48.1351, lon: 11.5820 },
-                "Dortmund": { lat: 51.5136, lon: 7.4653 },
-                "Leverkusen": { lat: 51.0459, lon: 7.0192 },
-                "Leipzig": { lat: 51.3397, lon: 12.3731 },
-                "Stuttgart": { lat: 48.7758, lon: 9.1829 },
-                "Frankfurt": { lat: 50.1109, lon: 8.6821 },
-                "Berlin": { lat: 52.5200, lon: 13.4050 },
-                "Bremen": { lat: 53.0793, lon: 8.8017 },
-                "Freiburg": { lat: 47.9990, lon: 7.8421 },
-                "Hoffenheim": { lat: 49.2536, lon: 8.8778 },
-                "Sinsheim": { lat: 49.2536, lon: 8.8778 },
-                "Mönchengladbach": { lat: 51.1805, lon: 6.4428 },
-                "Wolfsburg": { lat: 52.4227, lon: 10.7865 },
-                "Augsburg": { lat: 48.3705, lon: 10.8978 },
-                "Heidenheim": { lat: 48.6769, lon: 10.1525 },
-                "Mainz": { lat: 49.9929, lon: 8.2473 },
-                "Bochum": { lat: 51.4818, lon: 7.2162 },
-                "Hamburg": { lat: 53.5511, lon: 9.9937 },
-                "Kiel": { lat: 54.3233, lon: 10.1228 },
-                "Köln": { lat: 50.9333, lon: 6.9500 },
-                "Düsseldorf": { lat: 51.2217, lon: 6.7762 },
-                "St. Pauli": { lat: 53.5511, lon: 9.9937 }
+            // Komplett databas över alla Bundesliga-lag, deras hemmaarenor, städer och exakta GPS-koordinater
+            const bundesligaVenueDatabase = {
+                "bayern": { city: "München", stadium: "Allianz Arena", lat: 48.2188, lon: 11.6247 },
+                "münchen": { city: "München", stadium: "Allianz Arena", lat: 48.2188, lon: 11.6247 },
+                "dortmund": { city: "Dortmund", stadium: "Signal Iduna Park", lat: 51.4926, lon: 7.4519 },
+                "bvb": { city: "Dortmund", stadium: "Signal Iduna Park", lat: 51.4926, lon: 7.4519 },
+                "leverkusen": { city: "Leverkusen", stadium: "BayArena", lat: 51.0382, lon: 7.0022 },
+                "leipzig": { city: "Leipzig", stadium: "Red Bull Arena", lat: 51.3458, lon: 12.3639 },
+                "stuttgart": { city: "Stuttgart", stadium: "MHP Arena", lat: 48.7923, lon: 9.2321 },
+                "frankfurt": { city: "Frankfurt", stadium: "Deutsche Bank Park", lat: 50.0686, lon: 8.6455 },
+                "eintracht": { city: "Frankfurt", stadium: "Deutsche Bank Park", lat: 50.0686, lon: 8.6455 },
+                "bremen": { city: "Bremen", stadium: "Weserstadion", lat: 53.0664, lon: 8.8376 },
+                "werder": { city: "Bremen", stadium: "Weserstadion", lat: 53.0664, lon: 8.8376 },
+                "freiburg": { city: "Freiburg", stadium: "Europa-Park Stadion", lat: 48.0210, lon: 7.8296 },
+                "heidenheim": { city: "Heidenheim", stadium: "Voith-Arena", lat: 48.6687, lon: 10.1394 },
+                "hoffenheim": { city: "Sinsheim", stadium: "PreZero Arena", lat: 49.2381, lon: 8.8876 },
+                "sinsheim": { city: "Sinsheim", stadium: "PreZero Arena", lat: 49.2381, lon: 8.8876 },
+                "mönchengladbach": { city: "Mönchengladbach", stadium: "BORUSSIA-PARK", lat: 51.1746, lon: 6.3855 },
+                "gladbach": { city: "Mönchengladbach", stadium: "BORUSSIA-PARK", lat: 51.1746, lon: 6.3855 },
+                "wolfsburg": { city: "Wolfsburg", stadium: "Volkswagen Arena", lat: 52.4326, lon: 10.8038 },
+                "augsburg": { city: "Augsburg", stadium: "WWK Arena", lat: 48.3228, lon: 10.8858 },
+                "mainz": { city: "Mainz", stadium: "MEWA ARENA", lat: 49.9840, lon: 8.2242 },
+                "bochum": { city: "Bochum", stadium: "Vonovia Ruhrstadion", lat: 51.4899, lon: 7.2365 },
+                "st. pauli": { city: "Hamburg", stadium: "Millerntor-Stadion", lat: 53.5544, lon: 9.9678 },
+                "pauli": { city: "Hamburg", stadium: "Millerntor-Stadion", lat: 53.5544, lon: 9.9678 },
+                "kiel": { city: "Kiel", stadium: "Holstein-Stadion", lat: 54.3491, lon: 10.1232 },
+                "union": { city: "Berlin", stadium: "Stadion An der Alten Försterei", lat: 52.4572, lon: 13.5681 },
+                "berlin": { city: "Berlin", stadium: "Olympiastadion", lat: 52.5147, lon: 13.2394 },
+                "köln": { city: "Köln", stadium: "RheinEnergieStadion", lat: 50.9333, lon: 6.8750 },
+                "düsseldorf": { city: "Düsseldorf", stadium: "Merkur Spiel-Arena", lat: 51.2616, lon: 6.7333 }
             };
 
             let detectedSeason = null;
@@ -238,31 +244,33 @@
                 return weatherCodes[code] || { desc: "Växlande molnighet", icon: "🌤️" };
             }
 
-            async function getCoordinates(cityName) {
-                if (!cityName) return cityCoords["München"];
+            // Identifiera hemmaarena, stad och GPS baserat på hemmalagets namn eller location
+            function resolveMatchVenue(match) {
+                const homeTeamName = (match.team1 && match.team1.teamName) ? match.team1.teamName.toLowerCase() : "";
+                const homeShort = (match.team1 && match.team1.shortName) ? match.team1.shortName.toLowerCase() : "";
+                const locationCity = (match.location && match.location.locationCity) ? match.location.locationCity.toLowerCase() : "";
+                const locationStadium = (match.location && match.location.locationStadium) ? match.location.locationStadium : "";
 
-                for (const city in cityCoords) {
-                    if (cityName.toLowerCase().includes(city.toLowerCase())) {
-                        return cityCoords[city];
-                    }
-                }
-
-                try {
-                    const cleanCity = cityName.split(',')[0].replace(/Deutschland|Germany/gi, '').trim();
-                    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanCity)}&count=1&language=de&format=json`);
-                    const geoData = await geoRes.json();
-                    if (geoData.results && geoData.results.length > 0) {
+                // Sök i arenadatabasen
+                for (const key in bundesligaVenueDatabase) {
+                    if (homeTeamName.includes(key) || homeShort.includes(key) || locationCity.includes(key)) {
+                        const venue = bundesligaVenueDatabase[key];
                         return {
-                            lat: geoData.results[0].latitude,
-                            lon: geoData.results[0].longitude,
-                            name: geoData.results[0].name
+                            city: venue.city,
+                            stadium: locationStadium || venue.stadium,
+                            lat: venue.lat,
+                            lon: venue.lon
                         };
                     }
-                } catch (e) {
-                    console.warn("Geocoding fallback:", e);
                 }
 
-                return cityCoords["München"];
+                // Fallback
+                return {
+                    city: match.location?.locationCity || match.team1?.teamName || "München",
+                    stadium: locationStadium || "Bundesliga Arena",
+                    lat: 48.2188,
+                    lon: 11.6247
+                };
             }
 
             // Hämta matcher för vald omgång
@@ -302,7 +310,7 @@
                 }
             }
 
-            // Generera kommande helgs matcher vid behov
+            // Fallback med olika Bundesligastäder
             function generateUpcomingMatchesFallback(round) {
                 const teams = [
                     { name: "FC Bayern München", short: "FC Bayern", city: "München", stadium: "Allianz Arena", icon: "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg" },
@@ -368,13 +376,13 @@
                     matchPills.innerHTML = loadedMatches.map((m, index) => {
                         const t1 = m.team1 ? (m.team1.shortName || m.team1.teamName) : 'Lag 1';
                         const t2 = m.team2 ? (m.team2.shortName || m.team2.teamName) : 'Lag 2';
-                        const dateStr = m.matchDateTime ? new Date(m.matchDateTime).toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+                        const venue = resolveMatchVenue(m);
                         const isSelected = index === currentMatchIndex;
                         return `
                             <button type="button" data-match-idx="${index}" class="match-pill-btn text-left p-3 rounded-xl border text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${isSelected ? 'bg-blue-600/30 border-blue-500 text-white shadow-md' : 'bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 text-slate-300'}">
                                 <div class="truncate">
                                     <div class="font-bold text-slate-100">${t1} – ${t2}</div>
-                                    <div class="text-[11px] text-slate-400 font-normal mt-0.5">📅 ${dateStr}</div>
+                                    <div class="text-[11px] text-slate-400 font-normal mt-0.5"> ${venue.city} (${venue.stadium})</div>
                                 </div>
                                 <span class="text-[10px] text-blue-400 font-mono ml-2">#${index + 1}</span>
                             </button>
@@ -403,24 +411,16 @@
                 try {
                     const homeTeam = match.team1 || {};
                     const awayTeam = match.team2 || {};
-                    const matchCity = (match.location && match.location.locationCity) 
-                        ? match.location.locationCity 
-                        : (homeTeam.teamName || "München");
-                    const stadium = (match.location && match.location.locationStadium) 
-                        ? match.location.locationStadium 
-                        : "Arena";
+                    const venue = resolveMatchVenue(match);
 
-                    const coords = await getCoordinates(matchCity);
-
-                    // Anropa Open-Meteo med 16 dagars prognos + 7 dagars historik för att alltid täcka speldagen
-                    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,weather_code,wind_speed_10m_max&hourly=temperature_2m,apparent_temperature,precipitation,precipitation_probability,weather_code,wind_speed_10m&forecast_days=16&past_days=7&timezone=auto`;
+                    // Anropa Open-Meteo med exakta GPS-koordinater för hemmaarenan
+                    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${venue.lat}&longitude=${venue.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,weather_code,wind_speed_10m_max&hourly=temperature_2m,apparent_temperature,precipitation,precipitation_probability,weather_code,wind_speed_10m&current=temperature_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&forecast_days=16&past_days=7&timezone=auto`;
                     const weatherRes = await fetch(weatherUrl);
                     const weatherData = await weatherRes.json();
 
                     const matchDateObj = match.matchDateTime ? new Date(match.matchDateTime) : new Date();
                     const matchDateFormatted = matchDateObj.toLocaleString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
                     
-                    // Ta ut år, månad, dag och timme för speldagen
                     const y = matchDateObj.getFullYear();
                     const m = String(matchDateObj.getMonth() + 1).padStart(2, '0');
                     const d = String(matchDateObj.getDate()).padStart(2, '0');
@@ -434,13 +434,11 @@
                     let precip = null;
                     let precipProb = null;
                     let weatherCode = null;
-                    let weatherHeadline = `Väderprognos för matchdagen (${matchDateFormatted})`;
+                    let isKickoff = false;
 
-                    // 1. Sök efter exakt timme för avspark i hourly-data
+                    // 1. Sök i hourly prognos för matchdagen och avsparkstimmen
                     if (weatherData.hourly && weatherData.hourly.time) {
                         let hourIdx = weatherData.hourly.time.findIndex(t => t.startsWith(targetHourPrefix));
-                        
-                        // Om exakt timme inte finns, sök på eftermiddag/dagtid för matchdagen
                         if (hourIdx === -1) {
                             hourIdx = weatherData.hourly.time.findIndex(t => t.startsWith(`${dateKey}T15`));
                         }
@@ -455,28 +453,18 @@
                             precip = weatherData.hourly.precipitation[hourIdx];
                             precipProb = weatherData.hourly.precipitation_probability ? weatherData.hourly.precipitation_probability[hourIdx] : null;
                             weatherCode = weatherData.hourly.weather_code[hourIdx];
+                            isKickoff = true;
                         }
                     }
 
-                    // 2. Om hourly inte matchade, använd daily-data för speldagen
-                    if (temp === null && weatherData.daily && weatherData.daily.time) {
-                        const dayIdx = weatherData.daily.time.indexOf(dateKey);
-                        if (dayIdx !== -1) {
-                            temp = Math.round(weatherData.daily.temperature_2m_max[dayIdx]);
-                            wind = weatherData.daily.wind_speed_10m_max[dayIdx];
-                            precip = weatherData.daily.precipitation_sum[dayIdx];
-                            precipProb = weatherData.daily.precipitation_probability_max ? weatherData.daily.precipitation_probability_max[dayIdx] : null;
-                            weatherCode = weatherData.daily.weather_code[dayIdx];
-                        }
-                    }
-
-                    // 3. Om datumet ändå är utanför prognosfönstret (t.ex. flera månader bort), hämta dagens referens
-                    if (temp === null) {
-                        temp = 18;
-                        wind = 12;
-                        precipProb = 10;
-                        weatherCode = 1;
-                        weatherHeadline = `Väderprognos för matchdagen (${matchDateFormatted})`;
+                    // 2. Om hourly inte matchade datumet, använd live current_weather från Open-Meteo för den specifika arenastaden
+                    if (temp === null && weatherData.current) {
+                        temp = Math.round(weatherData.current.temperature_2m);
+                        apparentTemp = Math.round(weatherData.current.apparent_temperature);
+                        wind = weatherData.current.wind_speed_10m;
+                        precip = weatherData.current.precipitation;
+                        weatherCode = weatherData.current.weather_code;
+                        isKickoff = false;
                     }
 
                     const weatherInfo = getWeatherDescription(weatherCode !== null ? weatherCode : 1);
@@ -514,17 +502,17 @@
                             </div>
 
                             <div class="text-xs text-center text-slate-400 pt-2 border-t border-slate-700/60 flex items-center justify-center gap-1.5">
-                                <span>📍 Arena:</span> <strong class="text-slate-200">${matchCity}</strong> ${stadium && stadium !== 'Arena' ? '— ' + stadium : ''}
+                                <span>📍 Arena:</span> <strong class="text-slate-200">${venue.city}</strong> — ${venue.stadium} <span class="text-[10px] text-slate-500 font-mono">(${venue.lat.toFixed(2)}°N, ${venue.lon.toFixed(2)}°E)</span>
                             </div>
                         </div>
 
-                        <!-- Väderinfo för Matchdagen -->
+                        <!-- Väderinfo för Matcharenan -->
                         <div class="bg-gradient-to-br from-blue-950/80 via-slate-800/90 to-slate-900 p-5 rounded-2xl border border-blue-900/60 space-y-3 shadow-lg">
                             <div class="flex items-center justify-between flex-wrap gap-2">
                                 <span class="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
-                                    <span>🌤️</span> Väderprognos för matchdagen i ${matchCity}
+                                    <span>🌤️</span> ${isKickoff ? `Väderprognos vid avspark i ${venue.city}` : `Live arenaväder i ${venue.city}`}
                                 </span>
-                                <span class="text-[11px] text-slate-400 font-mono bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">Avspark ${matchDateFormatted.split('kl.')[1] || ''}</span>
+                                <span class="text-[11px] text-slate-400 font-mono bg-slate-800/80 px-2.5 py-0.5 rounded-md border border-slate-700">Open-Meteo Live API</span>
                             </div>
 
                             <div class="flex items-center justify-between flex-wrap gap-4 pt-1">
@@ -532,7 +520,7 @@
                                     <span class="text-4xl filter drop-shadow">${weatherInfo.icon}</span>
                                     <div>
                                         <div class="text-2xl font-black text-white">${temp !== null ? temp + '°C' : '--'}</div>
-                                        <div class="text-xs font-medium text-slate-300">${weatherInfo.desc} på matchdagen</div>
+                                        <div class="text-xs font-medium text-slate-300">${weatherInfo.desc} vid ${venue.stadium}</div>
                                     </div>
                                 </div>
 
@@ -547,7 +535,7 @@
                                     </div>
                                     <div class="bg-slate-800/90 px-3 py-2 rounded-xl border border-slate-700">
                                         <span class="text-slate-400 block text-[10px]">${precipProb !== null ? 'Regnrisk' : 'Nederbörd'}</span>
-                                        <strong class="text-slate-100 font-mono">${precipProb !== null ? precipProb + '%' : (precip !== null ? precip + ' mm' : '0%')}</strong>
+                                        <strong class="text-slate-100 font-mono">${precipProb !== null ? precipProb + '%' : (precip !== null ? precip + ' mm' : '0 mm')}</strong>
                                     </div>
                                 </div>
                             </div>
@@ -560,7 +548,8 @@
                         'event': 'api_mashup_search',
                         'round': currentRound,
                         'match_teams': `${homeTeam.teamName || 'Hemmalag'} vs ${awayTeam.teamName || 'Bortalag'}`,
-                        'match_location': matchCity,
+                        'match_location': venue.city,
+                        'match_stadium': venue.stadium,
                         'match_weather_temp': temp
                     });
 
