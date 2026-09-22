@@ -106,3 +106,117 @@ portfolioLinks.forEach(item => {
     console.log('dataLayer event pushad:', itemName);
   });
 });
+
+// 4. Kontaktformulär Modal Logik
+document.addEventListener('DOMContentLoaded', () => {
+    const openMailBtn = document.getElementById('open-mail-modal-btn');
+    const contactModal = document.getElementById('contact-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const contactForm = document.getElementById('contact-mail-form');
+    const copyEmailBtn = document.getElementById('btn-copy-email');
+    const copyEmailText = document.getElementById('copy-email-text');
+    const formFeedback = document.getElementById('contact-form-feedback');
+
+    function openModal() {
+        if (!contactModal) return;
+        contactModal.classList.add('active');
+        contactModal.setAttribute('aria-hidden', 'false');
+        
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            event: 'contact_modal_open'
+        });
+
+        // Fokusera på första fältet
+        const firstInput = document.getElementById('contact-name');
+        if (firstInput) setTimeout(() => firstInput.focus(), 150);
+    }
+
+    function closeModal() {
+        if (!contactModal) return;
+        contactModal.classList.remove('active');
+        contactModal.setAttribute('aria-hidden', 'true');
+        if (formFeedback) {
+            formFeedback.textContent = '';
+            formFeedback.className = 'form-feedback';
+        }
+    }
+
+    if (openMailBtn) {
+        openMailBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal();
+        });
+    }
+
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeModal);
+    }
+
+    if (modalBackdrop) {
+        modalBackdrop.addEventListener('click', closeModal);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && contactModal && contactModal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('contact-name')?.value.trim() || '';
+            const email = document.getElementById('contact-email')?.value.trim() || '';
+            const subject = document.getElementById('contact-subject')?.value.trim() || 'Kontakt via portföljen';
+            const message = document.getElementById('contact-message')?.value.trim() || '';
+
+            const bodyContent = `Hej Robin,\n\n${message}\n\n---\nAvsändare: ${name}\nE-post: ${email}`;
+            const mailtoUrl = `mailto:Robin.axelsson@student.berghs.se?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyContent)}`;
+
+            if (formFeedback) {
+                formFeedback.textContent = 'Öppnar ditt e-postprogram för att skicka...';
+                formFeedback.className = 'form-feedback success';
+            }
+
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                event: 'contact_form_submit',
+                sender_name: name,
+                sender_email: email,
+                subject: subject
+            });
+
+            setTimeout(() => {
+                window.location.href = mailtoUrl;
+            }, 300);
+        });
+    }
+
+    if (copyEmailBtn) {
+        copyEmailBtn.addEventListener('click', () => {
+            const emailToCopy = 'Robin.axelsson@student.berghs.se';
+            navigator.clipboard.writeText(emailToCopy).then(() => {
+                if (copyEmailText) copyEmailText.textContent = 'Kopierad! ✓';
+                if (formFeedback) {
+                    formFeedback.textContent = 'E-postadressen är kopierad till urklipp!';
+                    formFeedback.className = 'form-feedback success';
+                }
+
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    event: 'contact_email_copied'
+                });
+
+                setTimeout(() => {
+                    if (copyEmailText) copyEmailText.textContent = 'Kopiera e-post';
+                }, 2500);
+            }).catch(() => {
+                // Fallback om clipboard API blockeras
+                if (copyEmailText) copyEmailText.textContent = 'Robin.axelsson@student.berghs.se';
+            });
+        });
+    }
+});
