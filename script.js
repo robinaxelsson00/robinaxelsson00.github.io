@@ -83,3 +83,84 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Koordinater för tyska matchstäder
+const matchCities = {
+  "Düsseldorf": { lat: 51.2217, lon: 6.7762 },
+  "Köln": { lat: 50.9333, lon: 6.9500 },
+  "Dortmund": { lat: 51.5139, lon: 7.4653 },
+  "München": { lat: 48.1371, lon: 11.5754 },
+  "Gelsenkirchen": { lat: 51.5175, lon: 7.1003 }
+};
+
+const apiBtn = document.getElementById("search-api-btn");
+
+if (apiBtn) {
+  apiBtn.addEventListener("click", async function () {
+    const loadingEl = document.getElementById("api-loading");
+    const resultEl = document.getElementById("api-result");
+
+    loadingEl.classList.remove("hidden");
+    resultEl.innerHTML = "";
+
+    try {
+      // 1. ANROP TILL API 1: Fotbollsdata (OpenLigaDB)
+      const footballRes = await fetch("https://api.openligadb.de/getmatchdata/bl1");
+      if (!footballRes.ok) throw new Error("Gick inte att hämta fotbollsdata");
+      
+      const matches = await footballRes.json();
+      const nextMatch = matches[0]; // Första matchen i listan
+
+      const homeTeam = nextMatch.team1.teamName;
+      const awayTeam = nextMatch.team2.teamName;
+      const location = nextMatch.location?.locationCity || "Düsseldorf";
+
+      // Hämta koordinater för orten
+      const coords = matchCities[location] || { lat: 51.2217, lon: 6.7762 };
+
+      // 2. ANROP TILL API 2: Väderdata (Open-Meteo API)
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true`;
+      const weatherRes = await fetch(weatherUrl);
+      if (!weatherRes.ok) throw new Error("Gick inte att hämta väderdata");
+
+      const weatherData = await weatherRes.json();
+      const temp = weatherData.current_weather.temperature;
+      const windspeed = weatherData.current_weather.windspeed;
+
+      // 3. MASHUP: Rendera resultat i DOM:en
+      loadingEl.classList.add("hidden");
+      resultEl.innerHTML = `
+        <div class="p-5 bg-slate-800 rounded-lg border border-slate-700">
+          <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Kommande Match</span>
+          <h3 class="text-xl font-extrabold text-white mt-1">${homeTeam} vs ${awayTeam}</h3>
+          <p class="text-sm text-slate-300 mt-1">📍 Spelort: <strong>${location}</strong></p>
+          
+          <div class="mt-4 pt-4 border-t border-slate-700 flex justify-between items-center">
+            <div>
+              <span class="text-xs text-slate-400 block">Matchväder</span>
+              <span class="text-2xl font-black text-amber-400">${temp} °C</span>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-400 block">Vind</span>
+              <span class="text-sm font-semibold text-slate-200">${windspeed} km/h</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // 4. DATALAYER TRACKING (VG-spårning i GTM)
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'event': 'api_mashup_search',
+        'match_teams': `${homeTeam} vs ${awayTeam}`,
+        'match_location': location,
+        'weather_temp': temp
+      });
+
+    } catch (err) {
+      loadingEl.classList.add("hidden");
+      resultEl.innerHTML = `<p class="text-red-400 text-sm">Fel: ${err.message}</p>`;
+      console.error(err);
+    }
+  });
+}

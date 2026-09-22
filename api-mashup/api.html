@@ -1,0 +1,16 @@
+<div class="max-w-xl mx-auto p-6 bg-slate-900 text-white rounded-xl shadow-xl border border-slate-800 my-8">
+  <h2 class="text-2xl font-bold mb-2">Bundesliga Match- & Väder-Matchup</h2>
+  <p class="text-sm text-slate-400 mb-6">Hämtar nästa match från OpenLigaDB och matchar spelorten mot aktuellt väder från Open-Meteo API.</p>
+
+  <button id="search-api-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors cursor-pointer">
+    Hämta Match & Matchväder
+  </button>
+
+  <!-- Laddningsindikator -->
+  <div id="api-loading" class="hidden mt-4 text-center text-slate-400 animate-pulse">
+    Kopplar upp mot API:er och sammanställer data...
+  </div>
+
+  <!-- Resultatkort -->
+  <div id="api-result" class="mt-6"></div>
+</div>
