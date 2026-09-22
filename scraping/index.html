@@ -11,36 +11,103 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Scraping & Data Extraction — Portfolio</title>
+    <title>Web Scraping & Data Extraction — Robin Axelsson</title>
 
-    <!-- Tailwind CSS för snabb, responsiv layout -->
+    <!-- Tailwind CSS för layout -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        * {
-            cursor: none !important;
+        :root {
+            --bg-color: #f5f5f0;
+            --text-primary: #111111;
+            --text-secondary: #666666;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Anpassad muspekare */
         .custom-cursor {
             position: fixed;
             top: 0;
             left: 0;
             width: 5mm;
             height: 10mm;
-            background-color: #ffffff;
+            background-color: #111111;
             pointer-events: none;
             z-index: 99999;
             mix-blend-mode: difference;
             transform: translate(-50%, -50%);
-            transition: transform 0.1s ease-out;
+            transition: transform 0.08s ease-out;
+            border-radius: 1px;
+        }
+
+        /* Iframe preview support */
+        .in-iframe header[style*="fixed"] {
+            display: none !important;
+        }
+        .in-iframe .custom-cursor {
+            display: none !important;
+        }
+
+        /* Kodmodal */
+        .code-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 1.5rem;
+        }
+
+        .code-modal.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .code-modal-dialog {
+            background-color: #0f172a;
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
         }
     </style>
+    <script>
+        if (window.self !== window.top) {
+            document.documentElement.classList.add('in-iframe');
+        }
+    </script>
 </head>
-<body class="bg-[#f5f5f0] text-slate-900 font-sans p-6 pt-20 pb-16 space-y-10 max-w-6xl mx-auto" style="background-color: #f5f5f0;">
+<body class="p-6 sm:p-12 pt-24 pb-28 max-w-6xl mx-auto space-y-10">
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3DD4CGV"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -51,7 +118,7 @@
 
     <!-- Tillbaka-länk till Portföljen (uppe i vänstra hörnet) -->
     <header style="position: fixed; top: 0; left: 0; padding: 1.5rem 2rem; z-index: 99999; mix-blend-mode: difference;">
-        <a href="../index.html" class="track-click" style="font-size: 1.1rem; font-weight: 900; letter-spacing: 2px; color: #ffffff; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; cursor: pointer !important; display: inline-block;">PORTFOLIO®</a>
+        <a href="../index.html" class="track-click" style="font-size: 1.1rem; font-weight: 900; letter-spacing: 2px; color: #ffffff; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; cursor: pointer; display: inline-block;">PORTFOLIO®</a>
     </header>
 
     <!-- Sidhuvud / Projektintro -->
@@ -63,7 +130,7 @@
         </div>
         <h1 class="text-3xl sm:text-4xl font-extrabold text-[#111111] tracking-tight">Automatiserad Web Scraping & Datautvinning</h1>
         <p class="text-[#666666] text-base sm:text-lg mt-2 max-w-3xl leading-relaxed">
-            Ett projekt för automatiserad hämtning och strukturering av ostrukturerad webbdata till CSV. Koden använder Node.js och Cheerio för att parsa sökresultat, extrahera bolagsuppgifter och generera rena dataset redo för analys.
+            Ett projekt för automatiserad hämtning och strukturering av ostrukturerad webbdata till CSV. Källkoden använder Node.js och Cheerio för att parsa sökresultat, extrahera bolagsuppgifter och generera rena dataset redo för analys.
         </p>
     </header>
 
@@ -89,9 +156,9 @@
                 </div>
                 <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
                     <span class="text-xs text-slate-500 font-mono">120+ bolag</span>
-                    <a href="foretag.csv" download class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors">
+                    <button type="button" id="btn-dl-foretag" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors cursor-pointer">
                         <span>📥</span> Ladda ner
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -109,9 +176,9 @@
                 </div>
                 <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
                     <span class="text-xs text-slate-500 font-mono">30+ rader</span>
-                    <a href="rubriker.csv" download class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors">
+                    <button type="button" id="btn-dl-rubriker" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors cursor-pointer">
                         <span>📥</span> Ladda ner
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -129,9 +196,9 @@
                 </div>
                 <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
                     <span class="text-xs text-slate-500 font-mono">ES Modules</span>
-                    <a href="scraper.txt" target="_blank" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors">
+                    <button type="button" id="btn-view-code" class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors cursor-pointer">
                         <span>📄</span> Visa källkod
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
@@ -141,9 +208,17 @@
     <section class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-                <h2 class="text-xl font-bold text-slate-900">2. Interaktiv Förhandsgranskning (foretag.csv)</h2>
-                <p class="text-xs text-slate-500 mt-0.5">Sök och filtrera i den insamlade datamängden direkt i webbläsaren</p>
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl font-bold text-slate-900">2. Interaktiv Datautforskare</h2>
+                    <!-- Flik-växlare -->
+                    <div class="inline-flex rounded-lg bg-slate-100 p-0.5 border border-slate-200 text-xs font-bold">
+                        <button type="button" id="tab-foretag" class="px-3 py-1 rounded-md bg-white text-slate-900 shadow-sm cursor-pointer">foretag.csv</button>
+                        <button type="button" id="tab-rubriker" class="px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 cursor-pointer">rubriker.csv</button>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Sök och filtrera i den insamlade datamängden direkt i webbläsaren</p>
             </div>
+
             <!-- Sökfält -->
             <div class="relative w-full sm:w-72">
                 <input id="table-search" type="text" placeholder="Sök bolag, stad, telefon..." 
@@ -152,10 +227,10 @@
         </div>
 
         <!-- Tabell -->
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto max-h-[480px]">
             <table class="w-full text-left text-xs border-collapse">
-                <thead>
-                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
+                <thead id="table-head">
+                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold sticky top-0 bg-slate-50">
                         <th class="py-3 px-4">Företagsnamn</th>
                         <th class="py-3 px-4">Org.nr</th>
                         <th class="py-3 px-4">Telefon</th>
@@ -164,16 +239,15 @@
                 </thead>
                 <tbody id="csv-table-body" class="divide-y divide-slate-100 text-slate-800 font-medium">
                     <!-- Fylls dynamiskt av JavaScriptet nedan -->
-                    <tr>
-                        <td colspan="4" class="py-8 text-center text-slate-400">Läser in data...</td>
-                    </tr>
                 </tbody>
             </table>
         </div>
 
         <div class="flex items-center justify-between pt-2 text-xs text-slate-500">
-            <span id="row-count">Visar data</span>
-            <a href="foretag.csv" download class="font-bold text-slate-800 hover:underline">Ladda ner hela filen (.csv) &rarr;</a>
+            <span id="row-count">Laddar data...</span>
+            <button type="button" id="btn-dl-active" class="font-bold text-slate-800 hover:underline cursor-pointer">
+                Ladda ner aktiv fil (.csv) &rarr;
+            </button>
         </div>
     </section>
 
@@ -202,20 +276,155 @@ $('.SearchResultCard-card').each((index, element) => {
         </div>
     </section>
 
-    <!-- Skript för dynamisk inläsning och sökning i CSV-tabellen -->
+    <!-- KOD-MODAL FÖR FULLSTÄNDIG SKRIPTVISNING -->
+    <div id="code-modal" class="code-modal" aria-hidden="true">
+        <div class="code-modal-dialog">
+            <div class="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">⚡</span>
+                    <span class="font-bold text-sm text-slate-200 font-mono">scraper.js / scraper.txt</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btn-copy-code" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-1.5 px-3 rounded-lg transition-colors cursor-pointer border border-slate-700">
+                        <span id="copy-code-text">Kopiera kod</span>
+                    </button>
+                    <button type="button" id="btn-close-code" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm cursor-pointer" aria-label="Stäng">✕</button>
+                </div>
+            </div>
+            <div class="p-4 overflow-y-auto max-h-[70vh] bg-slate-950 text-slate-300 font-mono text-xs leading-relaxed">
+                <pre><code id="code-content">Laddar källkod...</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skript för tabell, nedladdning, sökning och muspekare -->
     <script>
         (function() {
-            let allRows = [];
+            // 1. Muspekare-initiering direkt
+            const cursor = document.querySelector('.custom-cursor');
+            if (cursor) {
+                document.addEventListener('mousemove', (e) => {
+                    cursor.style.left = `${e.clientX}px`;
+                    cursor.style.top = `${e.clientY}px`;
+                });
+            }
+
+            // Inbäddad källkod
+            const fullScraperCode = `import fs from 'node:fs/promises';
+import * as cheerio from 'cheerio';
+
+// Hjälpfunktion för att pausa exekveringen i millisekunder
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function scrapePage(url, pageNum) {
+  console.log(\`[Sida \${pageNum}] Hämtar: \${url}\`);
+
+  const fetchOptions = {
+    method: 'GET',
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      'Accept-Language': 'sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7',
+      'Cache-Control': 'no-cache, no-store, must-revalidate'
+    }
+  };
+
+  const response = await fetch(url, fetchOptions);
+  if (!response.ok) throw new Error(\`HTTP-fel! Status: \${response.status}\`);
+
+  const html = await response.text();
+  const $ = cheerio.load(html);
+  const pageCompanies = [];
+
+  $('.SearchResultCard-card').each((index, element) => {
+    const card = $(element);
+    const name = card.find('h2').text().trim();
+    const orgNr = card.find('.CardHeader-propertyList:contains("Org.nr")').text().replace('Org.nr', '').trim();
+    const phone = card.find('.CardHeader-phone').text().replace('Telefon', '').trim();
+    const address = card.find('.fa-location-dot').parent().text().trim();
+
+    if (name) {
+      pageCompanies.push({ name, orgNr, phone, address });
+    }
+  });
+
+  return pageCompanies;
+}
+
+// Huvudfunktion för att iterera igenom sidor och spara till CSV
+async function main() {
+  const allCompanies = [];
+  const totalPages = 5;
+
+  for (let page = 1; page <= totalPages; page++) {
+    const url = \`https://example.com/search?page=\${page}\`;
+    const companies = await scrapePage(url, page);
+    allCompanies.push(...companies);
+    await delay(1000); // 1 sek delay mellan anrop
+  }
+
+  // Skriv ut till CSV
+  let csv = 'Företagsnamn,Organisationsnummer,Telefonnummer,Adress\\n';
+  allCompanies.forEach(c => {
+    csv += \`"\${c.name}","\${c.orgNr}","\${c.phone}","\${c.address}"\\n\`;
+  });
+
+  await fs.writeFile('foretag.csv', csv, 'utf-8');
+  console.log('Färdigt! Sparade data till foretag.csv');
+}
+
+main();`;
+
+            // Data för rubriker.csv
+            const rubrikerRows = [
+                ["White arkitekter Aktiebolag", "Göteborg"],
+                ["Liljewall Arkitekter Aktiebolag", "Göteborg"],
+                ["FOJAB arkitekter AB", "Malmö"],
+                ["Arkitekterna Krook & Tjäder", "Göteborg"],
+                ["QPG AB", "Göteborg"],
+                ["TOL Arkitekter AB", "Stockholm"],
+                ["Falugruppen arkitektkontor AB", "Falun"],
+                ["Nyréns Arkitektkontor Aktiebolag", "Stockholm"],
+                ["Tillberg Design AB", "Höganäs"],
+                ["Total Arkitektur", "Stockholm"],
+                ["Mats Fredriksson arkitektkontor AB", "Göteborg"],
+                ["AIX Arkitekter AB", "Stockholm"],
+                ["Magnus Ståhl Arkitektbyrå AB", "Stockholm"],
+                ["Equator Stockholm AB", "Stockholm"],
+                ["General Architecture Sweden AB", "Stockholm"],
+                ["Be Konstruktörer & Arkitekter AB", "Malmö"],
+                ["Abako Arkitektkontor Aktiebolag", "Göteborg"],
+                ["Åkerströms Arkitektkontor", "Umeå"],
+                ["Kanozi Arkitekter AB", "Göteborg"],
+                ["Semrén & Månsson Arkitekter AB", "Göteborg"]
+            ];
+
+            let activeDataset = 'foretag';
+            let foretagRows = [];
+            let currentRows = [];
+
             const tbody = document.getElementById('csv-table-body');
+            const thead = document.getElementById('table-head');
             const searchInput = document.getElementById('table-search');
             const countLabel = document.getElementById('row-count');
+            const tabForetag = document.getElementById('tab-foretag');
+            const tabRubriker = document.getElementById('tab-rubriker');
+            const btnDlActive = document.getElementById('btn-dl-active');
+
+            // Hjälpfunktion för nedladdning
+            function triggerDownload(filename, content) {
+                const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
 
             function parseCSV(text) {
                 const lines = text.trim().split('\n');
                 if (lines.length < 2) return [];
-                
                 return lines.slice(1).map(line => {
-                    // Hanterar citattecken och kommatecken i CSV
                     const matches = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
                     return matches.map(cell => cell.replace(/^"|"$/g, '').trim());
                 }).filter(row => row.length > 0 && row[0]);
@@ -223,50 +432,175 @@ $('.SearchResultCard-card').each((index, element) => {
 
             function renderTable(rows) {
                 if (!tbody) return;
+
+                if (activeDataset === 'foretag') {
+                    thead.innerHTML = `
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold sticky top-0 bg-slate-50">
+                            <th class="py-3 px-4">Företagsnamn</th>
+                            <th class="py-3 px-4">Org.nr</th>
+                            <th class="py-3 px-4">Telefon</th>
+                            <th class="py-3 px-4">Adress</th>
+                        </tr>
+                    `;
+                } else {
+                    thead.innerHTML = `
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold sticky top-0 bg-slate-50">
+                            <th class="py-3 px-4">Arkitektkontor / Byrå</th>
+                            <th class="py-3 px-4">Stad / Ort</th>
+                        </tr>
+                    `;
+                }
+
                 if (rows.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-400">Inga företag matchade din sökning.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-slate-400">Inga rader matchade sökningen.</td></tr>';
                     countLabel.textContent = '0 resultat funna';
                     return;
                 }
 
-                // Begränsa till max 25 rader vid rendering för bästa prestanda
-                const displayRows = rows.slice(0, 25);
-                tbody.innerHTML = displayRows.map(cols => `
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="py-2.5 px-4 font-bold text-slate-900">${cols[0] || '-'}</td>
-                        <td class="py-2.5 px-4 font-mono text-slate-600">${cols[1] || '-'}</td>
-                        <td class="py-2.5 px-4 font-mono text-slate-600">${cols[2] || '-'}</td>
-                        <td class="py-2.5 px-4 text-slate-600">${cols[3] || '-'}</td>
-                    </tr>
-                `).join('');
+                const displayRows = rows.slice(0, 30);
+                if (activeDataset === 'foretag') {
+                    tbody.innerHTML = displayRows.map(cols => `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-2.5 px-4 font-bold text-slate-900">${cols[0] || '-'}</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-600">${cols[1] || '-'}</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-600">${cols[2] || '-'}</td>
+                            <td class="py-2.5 px-4 text-slate-600">${cols[3] || '-'}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = displayRows.map(cols => `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-2.5 px-4 font-bold text-slate-900">${cols[0] || '-'}</td>
+                            <td class="py-2.5 px-4 text-slate-600">${cols[1] || '-'}</td>
+                        </tr>
+                    `).join('');
+                }
 
-                countLabel.textContent = `Visar ${displayRows.length} av totalt ${rows.length} företag`;
+                countLabel.textContent = `Visar ${displayRows.length} av totalt ${rows.length} rader (${activeDataset}.csv)`;
             }
 
-            // Hämta foretag.csv dynamiskt
+            // Hämta foretag.csv eller använd inbäddat
             fetch('foretag.csv')
                 .then(res => res.text())
                 .then(csvText => {
-                    allRows = parseCSV(csvText);
-                    renderTable(allRows);
+                    foretagRows = parseCSV(csvText);
+                    currentRows = foretagRows;
+                    renderTable(currentRows);
                 })
-                .catch(err => {
-                    console.warn('Kunde inte läsa in foretag.csv direkt via fetch:', err);
-                    tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-500">Kunde inte förhandsgranska CSV automatiskt (ladda ner filen ovan för att se all data).</td></tr>';
+                .catch(() => {
+                    // Fallback om lokal fetch begränsas
+                    foretagRows = [
+                        ["Smart Media Lab Sverige AB", "559204-8069", "-", "Stockholm"],
+                        ["Comotion AB", "556679-2288", "0431-41 03 61", "Ängelholm"],
+                        ["Most Studios AB", "556985-9845", "-", "Stockholm"],
+                        ["Svensk Mediabevakning AB", "556753-9100", "035-710 80 19", "Halmstad"],
+                        ["Relativt AB", "559401-7690", "031-29 05 13", "Göteborg"],
+                        ["Spotlight Communications AB", "556650-9880", "08-586 104 00", "Stockholm"]
+                    ];
+                    currentRows = foretagRows;
+                    renderTable(currentRows);
                 });
 
-            // Sökfiltrering i realtid
+            // Flikväxling
+            tabForetag.addEventListener('click', () => {
+                activeDataset = 'foretag';
+                tabForetag.className = 'px-3 py-1 rounded-md bg-white text-slate-900 shadow-sm cursor-pointer';
+                tabRubriker.className = 'px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 cursor-pointer';
+                currentRows = foretagRows;
+                if (searchInput) searchInput.value = '';
+                renderTable(currentRows);
+            });
+
+            tabRubriker.addEventListener('click', () => {
+                activeDataset = 'rubriker';
+                tabRubriker.className = 'px-3 py-1 rounded-md bg-white text-slate-900 shadow-sm cursor-pointer';
+                tabForetag.className = 'px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 cursor-pointer';
+                currentRows = rubrikerRows;
+                if (searchInput) searchInput.value = '';
+                renderTable(currentRows);
+            });
+
+            // Sökning
             if (searchInput) {
                 searchInput.addEventListener('input', function() {
-                    const query = this.value.toLowerCase().trim();
-                    if (!query) {
-                        renderTable(allRows);
+                    const q = this.value.toLowerCase().trim();
+                    if (!q) {
+                        renderTable(currentRows);
                         return;
                     }
-                    const filtered = allRows.filter(row => 
-                        row.some(col => (col || '').toLowerCase().includes(query))
-                    );
+                    const filtered = currentRows.filter(r => r.some(cell => (cell || '').toLowerCase().includes(q)));
                     renderTable(filtered);
+                });
+            }
+
+            // Nedladdningsknappar
+            document.getElementById('btn-dl-foretag').addEventListener('click', () => {
+                fetch('foretag.csv').then(r => r.text()).then(txt => triggerDownload('foretag.csv', txt)).catch(() => {
+                    const txt = foretagRows.map(r => `"${r.join('","')}"`).join('\n');
+                    triggerDownload('foretag.csv', 'Företagsnamn,Organisationsnummer,Telefonnummer,Adress\n' + txt);
+                });
+            });
+
+            document.getElementById('btn-dl-rubriker').addEventListener('click', () => {
+                fetch('rubriker.csv').then(r => r.text()).then(txt => triggerDownload('rubriker.csv', txt)).catch(() => {
+                    const txt = rubrikerRows.map(r => `"${r.join('","')}"`).join('\n');
+                    triggerDownload('rubriker.csv', 'Företagsnamn,Stad\n' + txt);
+                });
+            });
+
+            btnDlActive.addEventListener('click', () => {
+                if (activeDataset === 'foretag') {
+                    document.getElementById('btn-dl-foretag').click();
+                } else {
+                    document.getElementById('btn-dl-rubriker').click();
+                }
+            });
+
+            // Kodmodal
+            const codeModal = document.getElementById('code-modal');
+            const codeContent = document.getElementById('code-content');
+            const btnViewCode = document.getElementById('btn-view-code');
+            const btnCloseCode = document.getElementById('btn-close-code');
+            const btnCopyCode = document.getElementById('btn-copy-code');
+            const copyCodeText = document.getElementById('copy-code-text');
+
+            if (btnViewCode && codeModal) {
+                btnViewCode.addEventListener('click', () => {
+                    codeContent.textContent = fullScraperCode;
+                    codeModal.classList.add('active');
+                    codeModal.setAttribute('aria-hidden', 'false');
+                });
+            }
+
+            if (btnCloseCode && codeModal) {
+                btnCloseCode.addEventListener('click', () => {
+                    codeModal.classList.remove('active');
+                    codeModal.setAttribute('aria-hidden', 'true');
+                });
+            }
+
+            if (codeModal) {
+                codeModal.addEventListener('click', (e) => {
+                    if (e.target === codeModal) {
+                        codeModal.classList.remove('active');
+                        codeModal.setAttribute('aria-hidden', 'true');
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && codeModal && codeModal.classList.contains('active')) {
+                    codeModal.classList.remove('active');
+                    codeModal.setAttribute('aria-hidden', 'true');
+                }
+            });
+
+            if (btnCopyCode) {
+                btnCopyCode.addEventListener('click', () => {
+                    navigator.clipboard.writeText(fullScraperCode).then(() => {
+                        copyCodeText.textContent = 'Kopierad! ✓';
+                        setTimeout(() => { copyCodeText.textContent = 'Kopiera kod'; }, 2000);
+                    });
                 });
             }
         })();
@@ -276,4 +610,3 @@ $('.SearchResultCard-card').each((index, element) => {
     <script src="../script.js"></script>
 </body>
 </html>
-
