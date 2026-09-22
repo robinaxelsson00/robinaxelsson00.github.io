@@ -83,3 +83,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Eget dataLayer event för projektklick i portföljen
+const portfolioLinks = document.querySelectorAll('.reveal-item, .track-click');
+
+portfolioLinks.forEach(item => {
+  item.addEventListener('click', function() {
+    const itemName = this.innerText ? this.innerText.trim() : 'Okänt projekt';
+    const itemCategory = this.getAttribute('data-category') || 'Portfolio';
+    
+    // Säkerställ att dataLayer finns
+    window.dataLayer = window.dataLayer || [];
+    
+    // Pusha eget event med anpassade parametrar
+    window.dataLayer.push({
+      event: 'portfolio_item_click',
+      portfolio_item_name: itemName,
+      portfolio_category: itemCategory,
+      click_timestamp: new Date().toISOString()
+    });
+
+    console.log('dataLayer event pushad:', itemName);
+  });
+});
