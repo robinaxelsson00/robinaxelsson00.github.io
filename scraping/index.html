@@ -450,6 +450,13 @@ main();`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
+
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    event: 'scraper_download_csv',
+                    file_name: filename
+                });
+                console.log('%c[dataLayer] scraper_download_csv:', 'color: #3b82f6; font-weight: bold;', filename);
             }
 
             function parseCSV(text) {
@@ -697,6 +704,12 @@ main();`;
                     codeContent.textContent = fullScraperCode;
                     codeModal.classList.add('active');
                     codeModal.setAttribute('aria-hidden', 'false');
+
+                    window.dataLayer = window.dataLayer || [];
+                    window.dataLayer.push({
+                        event: 'scraper_view_code'
+                    });
+                    console.log('%c[dataLayer] scraper_view_code', 'color: #8b5cf6; font-weight: bold;');
                 });
             }
 
@@ -727,6 +740,13 @@ main();`;
                 btnCopyCode.addEventListener('click', () => {
                     navigator.clipboard.writeText(fullScraperCode).then(() => {
                         copyCodeText.textContent = 'Kopierad! ✓';
+                        
+                        window.dataLayer = window.dataLayer || [];
+                        window.dataLayer.push({
+                            event: 'scraper_copy_code'
+                        });
+                        console.log('%c[dataLayer] scraper_copy_code', 'color: #f59e0b; font-weight: bold;');
+
                         setTimeout(() => { copyCodeText.textContent = 'Kopiera kod'; }, 2000);
                     });
                 });

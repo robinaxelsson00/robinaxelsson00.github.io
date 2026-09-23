@@ -62,9 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Säker Klickspårning för DataLayer (VG-krav)
+    // 3. Säker Klickspårning för Rubriker (DataLayer)
     const clickableElements = document.querySelectorAll("h1, h2, h3, .item-text, .track-click");
-
     if (clickableElements && clickableElements.length > 0) {
         clickableElements.forEach(function (element) {
             element.addEventListener("click", function (e) {
@@ -78,37 +77,43 @@ document.addEventListener('DOMContentLoaded', () => {
                     'heading_type': tagType
                 });
 
-                console.log("Custom event pushed:", clickedText);
+                console.log("%c[dataLayer] heading_click:", "color: #10b981; font-weight: bold;", {
+                    event: 'heading_click',
+                    heading_text: clickedText,
+                    heading_type: tagType
+                });
             });
         });
     }
-});
 
-// Eget dataLayer event för projektklick i portföljen
-const portfolioLinks = document.querySelectorAll('.reveal-item, .track-click');
+    // 4. Eget dataLayer event för projektklick i portföljen
+    const portfolioLinks = document.querySelectorAll('.reveal-item');
+    portfolioLinks.forEach(item => {
+        item.addEventListener('click', function(e) {
+            const titleEl = this.querySelector('h3') || this.querySelector('.item-text');
+            const itemName = titleEl ? titleEl.innerText.trim() : (this.innerText ? this.innerText.trim() : 'Okänt projekt');
+            const itemCategory = this.getAttribute('data-category') || 'Portfolio';
+            const destinationUrl = this.getAttribute('href') || '';
 
-portfolioLinks.forEach(item => {
-  item.addEventListener('click', function() {
-    const itemName = this.innerText ? this.innerText.trim() : 'Okänt projekt';
-    const itemCategory = this.getAttribute('data-category') || 'Portfolio';
-    
-    // Säkerställ att dataLayer finns
-    window.dataLayer = window.dataLayer || [];
-    
-    // Pusha eget event med anpassade parametrar
-    window.dataLayer.push({
-      event: 'portfolio_item_click',
-      portfolio_item_name: itemName,
-      portfolio_category: itemCategory,
-      click_timestamp: new Date().toISOString()
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                'event': 'portfolio_item_click',
+                'portfolio_item_name': itemName,
+                'portfolio_category': itemCategory,
+                'destination_url': destinationUrl,
+                'click_timestamp': new Date().toISOString()
+            });
+
+            console.log("%c[dataLayer] portfolio_item_click:", "color: #3b82f6; font-weight: bold;", {
+                event: 'portfolio_item_click',
+                portfolio_item_name: itemName,
+                portfolio_category: itemCategory,
+                destination_url: destinationUrl
+            });
+        });
     });
 
-    console.log('dataLayer event pushad:', itemName);
-  });
-});
-
-// 4. Kontaktformulär Modal Logik
-document.addEventListener('DOMContentLoaded', () => {
+    // 5. Kontaktformulär Modal Logik
     const openMailBtn = document.getElementById('open-mail-modal-btn');
     const contactModal = document.getElementById('contact-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
@@ -125,8 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
-            event: 'contact_modal_open'
+            'event': 'contact_modal_open'
         });
+        console.log("%c[dataLayer] contact_modal_open", "color: #8b5cf6; font-weight: bold;");
 
         // Fokusera på första fältet
         const firstInput = document.getElementById('contact-name');
@@ -183,10 +189,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             window.dataLayer = window.dataLayer || [];
             window.dataLayer.push({
-                event: 'contact_form_submit',
-                sender_name: name,
-                sender_email: email,
-                subject: subject
+                'event': 'contact_form_submit',
+                'sender_name': name,
+                'sender_email': email,
+                'subject': subject
+            });
+            console.log("%c[dataLayer] contact_form_submit:", "color: #ec4899; font-weight: bold;", {
+                name, email, subject
             });
 
             setTimeout(() => {
@@ -207,14 +216,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 window.dataLayer = window.dataLayer || [];
                 window.dataLayer.push({
-                    event: 'contact_email_copied'
+                    'event': 'contact_email_copied'
                 });
+                console.log("%c[dataLayer] contact_email_copied", "color: #f59e0b; font-weight: bold;");
 
                 setTimeout(() => {
                     if (copyEmailText) copyEmailText.textContent = 'Kopiera e-post';
                 }, 2500);
             }).catch(() => {
-                // Fallback om clipboard API blockeras
                 if (copyEmailText) copyEmailText.textContent = 'Robin.axelsson@student.berghs.se';
             });
         });
