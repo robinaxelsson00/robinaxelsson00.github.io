@@ -241,6 +241,8 @@
                     <!-- Fylls dynamiskt av JavaScriptet nedan -->
                 </tbody>
             </table>
+        </div>
+
         <!-- Paginering & Sidkontroller -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-100 text-xs text-slate-600">
             <div class="flex items-center flex-wrap gap-3">
@@ -272,31 +274,6 @@
                     📥 Ladda ner CSV
                 </button>
             </div>
-        </div>
-    </section>
-
-    <!-- SEKTION 3: Källkod och arkitektur -->
-    <section class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
-        <h2 class="text-xl font-bold text-slate-900">3. Så fungerar scrapern (Kodarkitektur)</h2>
-        <p class="text-slate-600 text-sm leading-relaxed">
-            Scrapern körs asynkront med Node.js. För varje URL anropas sidan med anpassade HTTP-headers, varpå HTML-trädet läses in i Cheerio för att extrahera exakta CSS-klasser och fält. För att undvika att överbelasta målservern appliceras en inbyggd tidsfördröjning (<code class="bg-slate-100 px-1 py-0.5 rounded text-xs text-rose-600 font-mono">delay()</code>) mellan anropen innan datan konverteras till CSV-format.
-        </p>
-
-        <div class="bg-slate-900 text-slate-200 p-4 rounded-lg overflow-x-auto text-xs font-mono border border-slate-800 leading-relaxed">
-<pre><code>// Exempel: Selektorer och parsing med Cheerio
-const $ = cheerio.load(html);
-
-$('.SearchResultCard-card').each((index, element) => {
-    const card = $(element);
-    const name = card.find('h2').text().trim();
-    const orgNr = card.find('.CardHeader-propertyList:contains("Org.nr")').text().replace('Org.nr', '').trim();
-    const phone = card.find('.CardHeader-phone').text().replace('Telefon', '').trim();
-    const address = card.find('.fa-location-dot').parent().text().trim();
-
-    if (name) {
-        companies.push({ name, orgNr, phone, address });
-    }
-});</code></pre>
         </div>
     </section>
 
